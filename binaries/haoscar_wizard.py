@@ -26,7 +26,6 @@ import halib.Logger as logger
 import halib.chaif.Chaif as chaif
 import halib.hatci.Heartbeat as heartbeat
 import halib.Exit as exit
-import halib.web.WebService_Framework as web
 
 logger.initialize()
 
@@ -44,15 +43,17 @@ logger.subsection("sanity check completed, proceeding to next step")
 logger.section("Environment Configuration")
 env.configureEnvironment()
 
+#Next, we generate system configuration facts to be stored in DB
+sys_config = dict()
+sys_config = chaif.systemConfigurator()
+
 #After verifying system sanity we can setup stuff like the
 #database and any other thing necessary to setup.
 logger.section("Database Initialization")
 chaif.databaseSetup()
+logger.subsection("populating database")
+#TODO: Insert data into database at this stage after fixing database driver
 logger.subsection("proceeding to next step...")
-
-#We start our webservices framework to receive input
-logger.section("Web Services Framework")
-web.initialize()
 
 #We start with the HATCI
 logger.section("HATCI Setup")

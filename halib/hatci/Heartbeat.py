@@ -57,29 +57,32 @@ def configure():
 	hacf_value.append(init_comment)
 	logger.subsection("auto generating heartbeat configuration file")
 	hacf_value.append(hacf_config)
-		
-	#We need to get the default interface from haoscar.conf
-	FILE =  open("/etc/haoscar/haoscar.conf", "r")
-	line = FILE.readline()
-	while("NIC_INFO=" not in line):
-		line = FILE.readline()
-	temp = line.split("=")
-	if(len(temp)):
-		temp = temp[1].lstrip('\n')
-		logger.subsection("using interface "+temp)
-		hacf_value.append("bcast "+temp)
+	
+	#*****ALL References to haoscar.conf need to be re-routed to 
+	#*****the HA-OSCAR database
+	#We need to get the default interface from haoscar database
+	#FILE =  open("/etc/haoscar/haoscar.conf", "r")
+	#line = FILE.readline()
+	#while("NIC_INFO=" not in line):
+	#	line = FILE.readline()
+	#temp = line.split("=")
+	nic_info = ddriver.select_db("Configuration","NIC_INFO_P")
+	temp = nic_info['NIC_INFO_P']
+	if(len(nic_info)):
+		logger.subsection("using interface "+nic_info['NIC_INFO_P'])
+		hacf_value.append("bcast "+nic_info['NIC_INFO_P'])
 		hacf_value.append("udpport 694\nauto_failback on\n")
 		hacf_value.append("node "+commands.getoutput("uname -n")+"\n")
 			
-		db_result = ddriver.select_db("Heartbeat","secondary_host")
+		db_result = ddriver.select_db("Configuration","HOSTNAME_S")
 		if(db_result):
-			if(db_result['secondary_host']):
-				hacf_value.append("node "+db_result['secondary_host']+"\n")
+			if(db_result['HOSTNAME_S']):
+				hacf_value.append("node "+db_result['HOSTNAME_S']+"\n")
 				FILE = open(hacf, "w")
 				FILE.writelines(hacf_value)
 				FILE.close()
 	else:
-		logger.subsection("a fatal error has occured in parsing interface information")
+		logger.subsection("a fatal error has occured: could not retreive interface info")
 		return 1
 	
 	haresources = "/etc/ha.d/haresources"
@@ -87,14 +90,16 @@ def configure():
 		logger.subsection("haresource configuration exists, skipping")
 	else:
 		logger.subsection("writing haresource configuration")
-		FILE = open("/etc/haoscar/haoscar.conf", "r")
-		line = FILE.readline()
-		while("IP_ADDR=" not in line):
-			line = FILE.readline()
-		temp = line.split("=")
-		if(len(temp)>1):
+		#***Re-routed to the HA_OSCAR database
+		#FILE = open("/etc/haoscar/haoscar.conf", "r")
+		#line = FILE.readline()
+		#while("IP_ADDR=" not in line):
+		#	line = FILE.readline()
+		#temp = line.split("=")
+		ip_addr = ddriver.select("Configuration","IP_ADDR_P")
+		if(len(ip_addr)>=1):
 			haresource = []
-			haresource.append(commands.getoutput("uname -n") + " "+ temp[1])
+			haresource.append(commands.getoutput("uname -n") + " "+ ip_addr["IP_ADDR_P"])
 			FILE = open("/etc/ha.d/haresources","w")
 			FILE.writelines(haresource)
 		else:

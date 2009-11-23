@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 #
-# Copyright (c) 2009 Himanshu CHhetri <himanshuchhetri@gmail.com>        
+# Copyright (c) 2009 Himanshu CHhetri <himanshuchhetri@gmail.com> 
+#							Chuka Okoye <okoye9@gmail.com>       
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -24,13 +25,7 @@ import MySQLdb
 
 # Internal method that parses mysql credentials from haoscar.conf
 def get_credentials():
-  for line in open("/etc/haoscar/haoscar.conf"):
-    ar = line.split("=")
-    if ar[0].strip() == "DB_UNAME":
-      username = ar[1].strip()
-    if ar[0].strip() == "DB_PASS":
-      password = ar[1].strip()
-  return username, password
+  return "root","latech"
 
 # Creates database and required tables if they don't exist
 def create_db():

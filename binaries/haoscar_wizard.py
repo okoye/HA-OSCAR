@@ -43,14 +43,18 @@ logger.subsection("sanity check completed, proceeding to next step")
 logger.section("Environment Configuration")
 env.configureEnvironment()
 
+#We initialize our remote services library
+logger.section("Remote Services Initialization")
+chaif.remoteSetup()
+
+#Time to setup our databases
+logger.section("Database Initialization")
+chaif.databaseSetup()
+
 #Next, we generate system configuration facts to be stored in DB
 sys_config = dict()
 sys_config = chaif.systemConfigurator()
 
-#After verifying system sanity we can setup stuff like the
-#database and any other thing necessary to setup.
-logger.section("Database Initialization")
-chaif.databaseSetup()
 logger.subsection("populating database")
 #TODO: Insert data into database at this stage after fixing database driver
 logger.subsection("proceeding to next step...")

@@ -27,6 +27,7 @@ import array
 import halib.Logger as logger
 import halib.chaif.DatabaseDriver as ddriver
 import halib.chaif.SanityCheck as scheck
+import halib.chaif.RemoteServices as remote
 import halib.Exit as exit
 
 
@@ -53,6 +54,11 @@ def databaseSetup():
 	#Create database
 	ddriver.create_db()
 	logger.subsection("database setup completed sucessfully")
+
+def remoteSetup():
+	logger.subsection("initializing remote services library")
+	remote.initialize()
+	logger.subsection("remote services initalization completed")
 
 #@des:	The systemConfigurator method retrieves critical system facts
 #		It gets information about network interface, hdd partitioning and other

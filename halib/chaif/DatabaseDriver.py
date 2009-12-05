@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 #
 # Copyright (c) 2009 Himanshu CHhetri <himanshuchhetri@gmail.com> 
-#							Chuka Okoye <okoye9@gmail.com>       
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -21,95 +20,60 @@
 
 from os import path
 from sys import exit
-import MySQLdb
+import sqlite3
 
-# Internal method that parses mysql credentials from haoscar.conf
-def get_credentials():
-  return "root","latech"
-
-# Creates database and required tables if they don't exist
-def create_db():
-  username, password = get_credentials()
-  conn = MySQLdb.connect (host = "localhost",
-                          user = username, 
-                          passwd = password)
-  cursor = conn.cursor()
-  cursor.execute ("""
-  CREATE DATABASE IF NOT EXISTS hadb
-  """)
-  conn.commit()
-  conn.close()
-
-
-  conn = MySQLdb.connect (host = "localhost",
-                          user = username, 
-                          passwd = password,
-                          db = "hadb")
-  cursor = conn.cursor()
-  cursor.execute ("""
-  CREATE TABLE IF NOT EXISTS Heartbeat
+# Creates Database and Table
+def initialize():
+  conn = sqlite3.connect('/usr/share/haoscar/hadb')
+  c = conn.cursor()
+  c.execute('''
+  CREATE TABLE hainfo
   (
     name VARCHAR(100),
     value VARCHAR(100)
   )
-  """)
-  cursor.execute ("""
-  CREATE TABLE IF NOT EXISTS Secondary_Info
-  (
-    name VARCHAR(100),
-    value VARCHAR(100)
-  )
-  """)
+  ''')
   conn.commit()
-  conn.close()
+  c.close()
 
-# Insert value into the specified name of field and table
-# Eg: insert_db ("HAConfig", "OS", "Debian")
-def insert_db(table, get_name, get_value):
-  username, password = get_credentials()
-  conn = MySQLdb.connect (host = "localhost",
-                          user = username, 
-                          passwd = password,
-                          db = "hadb")
-  cursor = conn.cursor()
+# Insert given dictionary value
+# Eg: insert_db ("HAConfig", {"OS":"Debian"})
+def insert_db(table, get_dict):
+  get_key = get_dict.keys()[0]
+  get_value = get_dict.values()[0]
+  conn = sqlite3.connect('hadb')
+  c = conn.cursor()
   query = "INSERT INTO " + table + " (name, value) "
-  query += "VALUES('%s' , '%s')" % (get_name, get_value)
-  cursor.execute(query)
+  query += "VALUES('%s' , '%s')" % (get_key, get_value)
+  c.execute(query)
   conn.commit()
-  conn.close()
+  c.close()
 
-# Returns a hash matchig the specified table and field name
+# Returns a dictionary matching the given key from given table
 # Eg: select_db ("HAConfig", "OS") => {'OS': 'Debian'}
-def select_db(table, get_name):
+def select_db(table, get_key):
+  conn = sqlite3.connect('hadb')
+  c = conn.cursor()
   result = {}
-  username, password = get_credentials()
-  conn = MySQLdb.connect (host = "localhost",
-                          user = username, 
-                          passwd = password,
-                          db = "hadb")
-  cursor = conn.cursor()
-  query = "SELECT name, value from %s" % (table)
-  cursor.execute(query)
-  result_set = cursor.fetchall ()
-  for row in result_set:
-    if row[0] == get_name:
-      result[row[0]] = row[1]
-
-  conn.commit()
-  conn.close()
+  query = "SELECT * from %s WHERE name = '%s'" % (table, get_key)
+  print query
+  c.execute(query) 
+  for row in c:
+    result[row[0]] = row[1]
+  c.close()
   return result
 
-# Updates the value of specified field name in the given table
-# Eg: update_db ("HAConfig", "OS", "Redhat")
-def update_db(table, get_name, get_value):
-  result = {}
-  username, password = get_credentials()
-  conn = MySQLdb.connect (host = "localhost",
-                          user = username, 
-                          passwd = password,
-                          db = "hadb")
-  cursor = conn.cursor()
-  query = "UPDATE %s SET value = '%s' WHERE name = '%s'" % (table, get_value, get_name)
-  cursor.execute(query)
+# Updates the value of specified field from given dictionary
+# Eg: select_db ("HAConfig", "OS") => {'OS': 'Debian'}
+#     update_db ("HAConfig", {"OS" : "Redhat"})
+#     select_db ("HAConfig", "OS") => {'OS': 'Redhat'}
+def update_db(table, get_dict):
+  conn = sqlite3.connect('hadb')
+  c = conn.cursor()
+  get_key = get_dict.keys()[0]
+  get_value = get_dict.values()[0]
+  query = "UPDATE '%s' SET value = '%s' WHERE name = '%s'" % (table, get_value, get_key)
+  c.execute(query)
   conn.commit()
-  conn.close()
+  c.close()
+  c.close()

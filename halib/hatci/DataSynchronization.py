@@ -25,45 +25,14 @@ import halib.chaif.DatabaseDriver as ddriver
 from os import path
 from os import system
 
-init_comment = """\n#HA-OSCAR auto generated heartbeat authentication
+init_comment = """\n#HA-OSCAR auto generated CSYNC config
 #file. You can change these values but ensure that the file remains
 #consistent on the primary and secondary server\n"""
-drbd_conf = []
+csync_conf = []
 
 def configure():
 	#Does a file pre-exist?
-	drbd_conf_file = "/etc/drbd.conf"
-	logger.subsection("creating drbd config file")
-	local_drbd_partition = ddriver.select("Configuration", "DATA_DIR_P")
-	second_drbd_partition= ddriver.select("Configuration", "DATA_DIR_S")
-	p_ip = ddriver.select("Configuration", "IP_ADDR_P")
-	s_ip = ddriver.select("Configuration", "IP_ADDR_S")
-
-	drbd_conf.append("global { usage-count no; }")
-	drbd_conf.append("resource repdata{")
-	drbd_conf.append("protocol C;")
-	drbd_conf.append("startup { wfc-timeout 0; degr-wfc-timeout 120; }")
-	drbd_conf.append("disk { on-io-error detach; } # or panic,")
-	drbd_conf.append("net {  cram-hmac-alg \"sha512\";\n") 
-   drbd_conf.append("shared-secret \"r00tf0043v3r\";\n") 
-   drbd_conf.append("after-sb-0pri discard-least-changes;\n") 
-   drbd_conf.append("after-sb-1pri discard-secondary;\n") 
-   drbd_conf.append("after-sb-2pri call-pri-lost-after-sb;\n")
-   drbd_conf>append("rr-conflict call-pri-lost;}\n")
-	drbd_conf.append(\"syncer { rate 10M; }")
-
-	#local partitioning info
-
-	drbd_conf.append("on drdb1.server {\ndevice /dev/drbd0;")
-   drbd_conf.append("disk "+local_drbd_partition["DATA_DIR_P"]+";\n")
-   drbd_conf.append("address "+p_ip["IP_ADDR_P"]+":7788;\n")
-   drbd_conf.append("meta-disk internal;\n}")
-	drbd_conf.append("""on drbd2.server {
-	 device /dev/drbd1;""")
-	drbd_conf.append("disk "+second_drbd_partition["DATA_DIR_S"]+"; \n")
-	drbd_conf.append("address "+s_ip["IP_ADDR_S"]+":7788;\n")
-	drbd_conf.append("meta-disk internal; \n}")
-
-	print drbd_conf
+	cysnc_conf_path = ""
+	logger.subsection("creating CSYNC config file")
 
 

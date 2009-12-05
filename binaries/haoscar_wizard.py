@@ -25,6 +25,7 @@ import halib.Env as env
 import halib.Logger as logger
 import halib.chaif.Chaif as chaif
 import halib.hatci.Heartbeat as heartbeat
+import halib.hatci.DataSynchronization as datasync
 import halib.Exit as exit
 
 logger.initialize()
@@ -44,8 +45,8 @@ logger.section("Environment Configuration")
 env.configureEnvironment()
 
 #We initialize our remote services library
-logger.section("Remote Services Initialization")
-chaif.remoteSetup()
+#logger.section("Remote Services Initialization")
+#chaif.remoteSetup()
 
 #Time to setup our databases
 logger.section("Database Initialization")
@@ -56,7 +57,7 @@ sys_config = dict()
 sys_config = chaif.systemConfigurator()
 
 logger.subsection("populating database")
-#TODO: Insert data into database at this stage after fixing database driver
+#TODO: Insert into DB
 logger.subsection("proceeding to next step...")
 
 #We start with the HATCI
@@ -65,3 +66,5 @@ logger.section("Heartbeat Configuration")
 
 if(heartbeat.configure() != 0):
 	logger.subsection("heartbeat config failed prematurely, terminating installation")
+	
+

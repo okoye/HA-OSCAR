@@ -1,1 +1,1 @@
-__all__=["Drbd","Heartbeat","Monit","Puppet"]
+__all__=["DataSynchronization","Heartbeat","Monit","Puppet"]

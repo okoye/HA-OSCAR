@@ -49,10 +49,9 @@ def sanityCheck():
 
 def databaseSetup():
 	logger.subsection("starting mysql services")
-	system("/etc/init.d/mysqld restart")
 	logger.subsection("initializing database")
 	#Create database
-	ddriver.create_db()
+	ddriver.initialize()
 	logger.subsection("database setup completed sucessfully")
 
 def remoteSetup():
@@ -72,9 +71,10 @@ def systemConfigurator():
 	conf_values = dict()
 	#this currently works only on systems with the by-label defined(most redhatbased)
 	cmd_output = commands.getoutput("ls /dev/disk/by-label")
+	#By default, it attempts to replicate home dir if 
 	if ("home" in cmd_output):
 		logger.subsection("the file system home has a label :)")
-		conf_values['DATA_DIR'] = commands.getoutput("findfs LABEL/home")
+		conf_values['DATA_DIR_P'] = commands.getoutput("findfs LABEL/home")
 	else:
 		logger.subsection("could not find home partition label")
 		str_value  = raw_input("Enter the device identificaton of your data partition example /dev/sda0 for scsi disks or /dev/hd[e|a]0 for ide: ")
@@ -84,10 +84,10 @@ def systemConfigurator():
 		cmd_result = commands.getoutput("e2label "+str_value)
 		if('superblock' in cmd_result or str_value is ""): #Improper method to check for bad device blocks
 			logger.subsection("nope, invalid device, skipping for now")
-			conf_values['DATA_DIR'] = ""
+			conf_values['DATA_DIR_P'] = ""
 		else:
 			logger.subsection("yep, congratulations we can proceed...")
-			conf_values['DATA_DIR'] = str_value
+			conf_values['DATA_DIR_P'] = str_value
 	
 	#######################################################################
 	#We move on to network stuffs
@@ -107,7 +107,7 @@ def systemConfigurator():
 	if (len(interface_list) == 1):
 		logger.subsection("detected only one interface: "+interface_list[0])
 		logger.subsection("adding to config file")
-		conf_values['NIC_INFO'] = interface_list[0]
+		conf_values['NIC_INFO_P'] = interface_list[0]
 	else:
 		temp = ""
 		for i in interface_list:
@@ -118,18 +118,18 @@ def systemConfigurator():
 		cmd_result = commands.getoutput("ifconfig "+str_value)
 		if ('error fetching' in cmd_result or str_value is ""):
 			logger.subsection("invalid device specified, skipping for now")
-			conf_values['NIC_INFO'] = ""
-			conf_values['IP_ADDR'] = ""
+			conf_values['NIC_INFO_P'] = ""
+			conf_values['IP_ADDR_P'] = ""
 		else:
 			logger.subsection("adding interface to config file, proceeding...")
-			conf_values['NIC_INFO'] =str_value
+			conf_values['NIC_INFO_P'] =str_value
 			logger.subsection("adding ip address of associated interface...")
 			ip_addr = socket.inet_ntoa(fcntl.ioctl(
 							s.fileno(),
 							0x8915,
 							struct.pack('256s', str_value[:15])
 							)[20:24])
-			conf_values['IP_ADDR']=ip_addr
+			conf_values['IP_ADDR_P']=ip_addr
 	
 	########################################################################
 	#We finally provide a default list of services to be monitored 'ssh daemon' really
@@ -141,7 +141,7 @@ def systemConfigurator():
 	#Finally, we describe the type of database to be created by our database
 	#abstraction method.
 	
-	conf_values['HA_DB_TYPE']="mysql"
+	conf_values['DB_TYPE']="mysql"
 	
 	#un-necessary methods, we will use a default uname and password
 	#uname = raw_input("Enter database username(only alpha numeric passwords): ")

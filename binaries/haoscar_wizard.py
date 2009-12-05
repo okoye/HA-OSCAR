@@ -44,10 +44,6 @@ logger.subsection("sanity check completed, proceeding to next step")
 logger.section("Environment Configuration")
 env.configureEnvironment()
 
-#We initialize our remote services library
-#logger.section("Remote Services Initialization")
-#chaif.remoteSetup()
-
 #Time to setup our databases
 logger.section("Database Initialization")
 chaif.databaseSetup()

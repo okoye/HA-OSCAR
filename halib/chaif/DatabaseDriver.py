@@ -18,13 +18,19 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-from os import path
+from os import path, unlink
 from sys import exit
 import sqlite3
 
 # Creates Database and Table
 def initialize():
-  conn = sqlite3.connect('/usr/share/haoscar/hadb')
+  db_path = "/usr/share/haoscar/hadb"
+  # Delete sqlite database file if it already exists
+  try:
+    unlink(db_path)
+  except OSError:
+    pass
+  conn = sqlite3.connect(db_path)
   c = conn.cursor()
   c.execute('''
   CREATE TABLE hainfo

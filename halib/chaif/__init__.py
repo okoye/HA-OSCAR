@@ -1,1 +1,1 @@
-__all__ = ["Chaif","SanityCheck","DatabaseSetup","RemoteServices"]
+__all__ = ["Chaif","SysConfigurator","SanityCheck","DatabaseSetup","RemoteServices"]

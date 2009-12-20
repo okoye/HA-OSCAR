@@ -26,7 +26,8 @@ errorsList = []
 def initialize():
 	rootCheck()
 	rubyCheck()
-	sshCheck()
+	#sshCheck is un-necessary: Chuka
+	#sshCheck()
 	networkCheck()
 	osCheck()
 	return errorsList

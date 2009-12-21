@@ -36,6 +36,7 @@ def initialize():
    str_value = ""
    conf_values = dict()
    paths = []
+   validated_paths = []
    #By default, it attempts to replicate home dir if it is in its own label. 
    if (os.path.isdir('/home')):
       logger.subsection("added home directory '/home' for replication :)")
@@ -46,16 +47,18 @@ def initialize():
       str_value  = raw_input("Enter paths to your user data directories seperated by commas [e.g /data]: ")
    #Do basic error checking to make sure that is a valid directory
    logger.subsection("is "+str_value+" a valid directory[ies]?")
-   str_value.replace(' ','')
+   str_value.replace(" ","")
    if(str_value is not ""):
       paths = paths + str_value.split(',')
-   validated_paths = []
    for path in paths:
-      if(os.path.isdir(path)):
+      if(os.path.exists(path)):
          logger.subsection(path+" is a valid path")
-         validated_paths.append(path)
+         validated_paths.append(path) #TODO: Fix truncation bug that exists
+
    count = 0
    path_hash = dict()
+   print "DEBUG: Original Paths are: ",paths
+   print "DEBUG: Validated Paths are: ",validated_paths
    for path in validated_paths:
       path_hash[count] = path
       count += 1

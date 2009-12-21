@@ -48,6 +48,7 @@ def databaseSetup():
 	logger.subsection("initializing database")
 	#Create database
 	database_init = ddriver.DbDriver()
+        database_init.create_database()
 	logger.subsection("database setup completed sucessfully")
 
 def remoteSetup():

@@ -26,7 +26,7 @@ import halib.Logger as logger
 import halib.chaif.Chaif as chaif
 import halib.chaif.DatabaseDriver as ddriver
 import halib.hatci.Heartbeat as heartbeat
-import halib.hatci.DataSynchronization as datasync
+import halib.hatci.Rsync as datasync
 import halib.Exit as exit
 
 logger.initialize()

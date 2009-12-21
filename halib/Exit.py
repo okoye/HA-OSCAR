@@ -34,6 +34,8 @@ def open(message=None):
       logger.subsection(message)
       os.chdir(os.getenv("HAS_HOME"))
       os.system("rm -rf .has_lock_file")
+
+   #TODO: Call Uniinstallation routines
    sys.exit(0)
 
 

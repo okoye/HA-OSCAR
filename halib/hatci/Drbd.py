@@ -1,8 +1,7 @@
 #! /usr/bin/env python
 #
-# Copyright (c) 2008 Louisiana Tech University Research Foundation.  
-#                    Chokchai (Box) Leangsuksun <box@latech.edu>
-#                    Okoye Chuka D.<okoye9@gmail.com> 
+# Copyright (c) 2009 Okoye Chuka D.<okoye9@gmail.com>
+#                    Himanshu CHhetri <himanshuchhetri@gmail.com>        
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -18,21 +17,5 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-import sys
-import commands
-import halib.chaif.DatabaseDriver as ddriver
-from os import path
-from os import system
-
-init_comment = """\n#HA-OSCAR auto generated CSYNC config
-#file. You can change these values but ensure that the file remains
-#consistent on the primary and secondary server\n"""
-csync_conf = []
-
-def configure():
-	#Does a file pre-exist?
-	cysnc_conf_path = ""
-	logger.subsection("creating CSYNC config file")
 
 

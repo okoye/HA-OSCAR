@@ -45,19 +45,25 @@ def initialize():
       logger.subsection("could not find home partition for synchronization")
       str_value  = raw_input("Enter paths to your user data directories seperated by commas [e.g /data]: ")
    #Do basic error checking to make sure that is a valid directory
-   logger.subsection("is "+str_value+" a valid directory[ies]")
+   logger.subsection("is "+str_value+" a valid directory[ies]?")
    str_value.replace(' ','')
    if(str_value is not ""):
-      paths.append(str_value.split(','))
-   print paths
+      paths = paths + str_value.split(',')
+   validated_paths = []
    for path in paths:
-      if(not os.path.exists(path)):
-         logger.subsection("invalid path: "+path)
-         paths.remove(path)
+      if(os.path.isdir(path)):
+         logger.subsection(path+" is a valid path")
+         validated_paths.append(path)
+   count = 0
+   path_hash = dict()
+   for path in validated_paths:
+      path_hash[count] = path
+      count += 1
+   conf_values['DATA_DIR'] = path_hash
 
-   logger.subsection("monitored directories: ".join([`path` for path in paths]))
-   conf_values['DATA_DIR'] = "".join([`path` for path in paths])
-   conf_values['DATA_SYNC'] = "CSYNC"
+   #For planned future support of other synchronization mechanisms like 
+   #DRBD, CSYNC ...
+   conf_values['DATA_SYNC'] = "RSYNC"
    #######################################################################
    #We move on to network stuffs
    #This code extracts the list of active interfaces for display to admin

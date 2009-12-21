@@ -45,7 +45,7 @@ class SysConfigurator:
         self.serviceConfig()
         self.databaseConfig()
         logger.subsection("finished generating configuration...")
-        return conf_values
+        return self.conf_values
     
     def dataConfig(self):
        ########################################################################
@@ -108,7 +108,7 @@ class SysConfigurator:
               temp = temp + i + ", "
           logger.subsection("Detected multiple active interfaces: "+temp)
           self.str_value = raw_input("Select a network interface from the options above: ")
-          self.str_value = str_value.strip()
+          self.str_value = self.str_value.strip()
           cmd_result = commands.getoutput("ifconfig "+self.str_value)
           if ('error fetching' in cmd_result or self.str_value is ""):
              logger.subsection("invalid device specified, skipping for now")
@@ -137,7 +137,7 @@ class SysConfigurator:
     #Finally, we describe the type of database to be created by our database
     #abstraction method.
     def databaseConfig(self):
-       conf_values['DB_TYPE']="sqlite"
+       self.conf_values['DB_TYPE']="sqlite"
     
        #un-necessary methods, we will use a default uname and password
        #uname = raw_input("Enter database username(only alpha numeric passwords): ")

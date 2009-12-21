@@ -73,7 +73,7 @@ class SysConfigurator:
        path_hash = dict()
        #print "DEBUG: Original Paths are: ",paths
        #print "DEBUG: Validated Paths are: ",validated_paths
-       for path in validated_paths:
+       for path in self.validated_paths:
           path_hash[count] = path
           count += 1
        self.conf_values['DATA_DIR'] = path_hash
@@ -98,7 +98,7 @@ class SysConfigurator:
        namestr = names.tostring()
        self.interface_list = [namestr[i:i+32].split('\0',1)[0] for i in range(0, outbytes, 32)]
     
-       if (len(interface_list) == 1):
+       if (len(self.interface_list) == 1):
           logger.subsection("detected only one interface: "+self.interface_list[0])
           logger.subsection("adding to config file")
           self.conf_values['NIC_INFO_P'] = self.interface_list[0]

@@ -57,8 +57,8 @@ def initialize():
 
    count = 0
    path_hash = dict()
-   print "DEBUG: Original Paths are: ",paths
-   print "DEBUG: Validated Paths are: ",validated_paths
+   #print "DEBUG: Original Paths are: ",paths
+   #print "DEBUG: Validated Paths are: ",validated_paths
    for path in validated_paths:
       path_hash[count] = path
       count += 1

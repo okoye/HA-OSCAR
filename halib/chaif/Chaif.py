@@ -47,7 +47,7 @@ def sanityCheck():
 def databaseSetup():
 	logger.subsection("initializing database")
 	#Create database
-	ddriver.initialize()
+	database_init = ddriver.DbDriver()
 	logger.subsection("database setup completed sucessfully")
 
 def remoteSetup():

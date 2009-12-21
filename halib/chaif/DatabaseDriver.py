@@ -21,6 +21,7 @@
 from os import path, unlink
 from sys import exit
 import sqlite3
+import halib.Logger as logger
 
 class DbDriver:
 
@@ -36,7 +37,7 @@ class DbDriver:
       pass
 
     if not path.exists(self.schema_path):
-      print "Cannot access database schema file"
+      logger.subsection("Cannot access database schema file")
       exit(2)
 
     # Create database creation query from schema file
@@ -50,9 +51,9 @@ class DbDriver:
     try:
       c.execute(query)
     except:
-      print "Invalid SQL syntax"
-      print "Query was :" 
-      print query
+      logger.subsection("Invalid SQL syntax")
+      logger.subsection("Query was :") 
+      logger.subsection(query)
       exit(2)
     conn.commit()
     c.close()
@@ -60,7 +61,7 @@ class DbDriver:
 # Returns list of tables in database as a list
   def get_tables(self):
     if not path.exists(self.db_path):
-      print "Cannot access database file at", self.db_path
+      logger.subsection("Cannot access database file at "+ self.db_path)
       exit(2)
 
     conn = sqlite3.connect(self.db_path)
@@ -70,9 +71,9 @@ class DbDriver:
     try:
       c.execute(query)
     except:
-      print "Invalid SQL syntax"
-      print "Query was :" 
-      print query
+      logger.subsection("Invalid SQL syntax")
+      logger.subsection("Query was :")
+      logger.subsection(query)
       exit(2)
     result = []
     for row in c:
@@ -84,17 +85,17 @@ class DbDriver:
 # Returns dictionary of key-value pair if key exists in given table of database
   def select_db(self, table, key):
     if not path.exists(self.db_path):
-      print "Cannot access database file at", self.db_path
+      logger.subsection("Cannot access database file at "+ self.db_path)
       exit(2)
     
     existing_tables = []
     existing_tables = self.get_tables()
     if table not in existing_tables:
-      print table, "does not exist in database"
+      logger.subsection(table+ " does not exist in database")
       exit(2)
 
     if type(key)!=str or type(table)!=str:
-      print key,table," both must of type String"
+      logger.subsection(key+" "+table+" both must of type String")
       exit(2)
 
     conn = sqlite3.connect(self.db_path)
@@ -104,9 +105,9 @@ class DbDriver:
     try:
       c.execute(query)
     except:
-      print "Invalid SQL syntax"
-      print "Query was :" 
-      print query
+      logger.subsection("Invalid SQL syntax")
+      logger.subsection("Query was :") 
+      logger.subsection(query)
       exit(2)
     result = {}
     for row in c:
@@ -118,20 +119,20 @@ class DbDriver:
   # Insert given dictionary into given table of database
   def insert_db(self, table, get_dict):
     if not path.exists(self.db_path):
-      print "Cannot access database"
+      logger.subsection("Cannot access database")
       exit(2)
 
     k = get_dict.keys()[0]
     v = get_dict.values()[0]
 
     if type(k)!=str or type(v)!=str:
-      print "Dictionary key and value must be of type String"
+      logger.subsection("Dictionary key and value must be of type String")
       exit(2)
 
     existing_tables = []
     existing_tables = self.get_tables()
     if table not in existing_tables:
-      print table, "does not exist in database"
+      logger.subsection(table+ " does not exist in database")
       exit(2)
 
     conn = sqlite3.connect(self.db_path)
@@ -141,9 +142,9 @@ class DbDriver:
     try:
       c.execute(query)
     except:
-      print "Invalid SQL syntax"
-      print "Query was :" 
-      print query
+      logger.subsection("Invalid SQL syntax")
+      logger.subsection("Query was :") 
+      logger.subsection(query)
       exit(2)
     conn.commit()
     c.close()
@@ -151,24 +152,24 @@ class DbDriver:
   # Update given table with new dictionary key-value pair
   def update_db(self, table, get_dict):
     if not path.exists(self.db_path):
-      print "Cannot access database"
+      logger.subsection("Cannot access database")
       exit(2)
 
     if type(get_dict) != dict:
-      print get_dict, " must be of type Dictionary"
+      logger.subsection(get_dict+ " must be of type Dictionary")
       exit(2)
 
     k = get_dict.keys()[0]
     v = get_dict.values()[0]
 
     if type(k)!=str or type(v)!=str:
-      print "Dictionary key and value must be of type String"
+      logger.subsection("Dictionary key and value must be of type String")
       exit(2)
 
     existing_tables = []
     existing_tables = self.get_tables()
     if table not in existing_tables:
-      print table, "does not exist in database"
+      logger.subsection(table+ " does not exist in database")
       exit(2)
 
     conn = sqlite3.connect(self.db_path)
@@ -177,9 +178,9 @@ class DbDriver:
     try:
       c.execute(query)
     except:
-      print "Invalid SQL syntax"
-      print "Query was :" 
-      print query
+      logger.subsection("Invalid SQL syntax")
+      logger.subsection("Query was :")
+      logger.subsection(query)
       exit(2)
     conn.commit()
     c.close()

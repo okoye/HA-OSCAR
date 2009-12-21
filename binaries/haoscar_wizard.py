@@ -24,6 +24,7 @@ import commands
 import halib.Env as env
 import halib.Logger as logger
 import halib.chaif.Chaif as chaif
+import halib.chaif.DatabaseDriver as ddriver
 import halib.hatci.Heartbeat as heartbeat
 import halib.hatci.DataSynchronization as datasync
 import halib.Exit as exit
@@ -49,13 +50,12 @@ logger.section("Gathering System Config Info")
 sys_config = dict()
 sys_config = chaif.systemConfigurator()
 
-#Time to setup our databases
+#Time to setup our databases and populate it.
 logger.section("Database Initialization")
 chaif.databaseSetup()
 
 logger.subsection("populating database")
-#TODO: Insert into DB
-logger.subsection("proceeding to next step...")
+ddriver.insert_db('hainfo',sys_config)
 
 #We start with the HATCI
 logger.section("HATCI Setup")

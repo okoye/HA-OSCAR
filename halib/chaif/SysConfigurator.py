@@ -56,7 +56,7 @@ def initialize():
          paths.remove(path)
 
    logger.subsection("monitored directories: ".join([`path` for path in paths]))
-   conf_values['DATA_DIR'] = paths
+   conf_values['DATA_DIR'] = "".join([`path` for path in paths])
    conf_values['DATA_SYNC'] = "CSYNC"
    #######################################################################
    #We move on to network stuffs
@@ -110,7 +110,7 @@ def initialize():
    #Finally, we describe the type of database to be created by our database
    #abstraction method.
 
-   conf_values['DB_TYPE']="mysql"
+   conf_values['DB_TYPE']="sqlite"
 
    #un-necessary methods, we will use a default uname and password
    #uname = raw_input("Enter database username(only alpha numeric passwords): ")

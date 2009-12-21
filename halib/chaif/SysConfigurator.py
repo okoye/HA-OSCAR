@@ -17,6 +17,14 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import os
+import socket
+import fcntl
+import struct
+import array
+import commands
+import halib.Logger as logger
+
 #@des:The systemConfigurator retrieves critical system facts
 #     It gets information about network interface, hdd partitioning and other
 #     things needed.
@@ -31,7 +39,7 @@ def initialize():
    #By default, it attempts to replicate home dir if it is in its own label. 
    if (os.path.isdir('/home')):
       logger.subsection("added home directory '/home' for replication :)")
-      paths.append("/home,")
+      paths.append("/home")
       str_value = raw_input("Enter any other directories that may contain user data seperated by commas [e.g /data,/repos]: ")
    else:
       logger.subsection("could not find home partition for synchronization")
@@ -39,12 +47,15 @@ def initialize():
    #Do basic error checking to make sure that is a valid directory
    logger.subsection("is "+str_value+" a valid directory[ies]")
    str_value.replace(' ','')
-   paths.append(str_value.split(','))
+   if(str_value is not ""):
+      paths.append(str_value.split(','))
+   print paths
    for path in paths:
-      if(not os.path.isdir(path)):
+      if(not os.path.exists(path)):
          logger.subsection("invalid path: "+path)
          paths.remove(path)
-   logger.subsection("monitoring the following paths: "+paths)
+
+   logger.subsection("monitored directories: ".join([`path` for path in paths]))
    conf_values['DATA_DIR'] = paths
    conf_values['DATA_SYNC'] = "CSYNC"
    #######################################################################

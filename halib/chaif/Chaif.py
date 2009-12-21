@@ -61,5 +61,6 @@ def remoteSetup():
 
 def systemConfigurator():
 	logger.subsection("gathering system configuration facts")
-	return sysConfig.initialize()
+        config = sysConfig.SysConfigurator()
+	return config.initialize()
 	

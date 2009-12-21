@@ -37,8 +37,9 @@ class SysConfigurator:
         self.validated_paths = []
         self.interface_list = []
         self.ip_addr = ""
-    
-    def configureSystem(self):
+   
+    #Appropriate method to call when trying to gather configuration data 
+    def initialize(self):
         self.dataConfig()
         self.netConfig()
         self.serviceConfig()

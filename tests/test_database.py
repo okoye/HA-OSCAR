@@ -19,11 +19,7 @@
 
 #   Unit tests for DatabaseDriver in CHAIF
 
-#Modified December 23: Okoye
-
-import sys
-sys.path.append("../")
-import halib.chaif.DatabaseDriver as ddriver
+import DatabaseDriver
 from os import path
 import unittest
 
@@ -32,7 +28,7 @@ class TestSequenceFunctions(unittest.TestCase):
   def setUp(self):
     self.db_path = "/tmp/db"
     self.schema_path = "/usr/share/haoscar/schema.sql"
-    self.db = ddriver.DbDriver(self.db_path, self.schema_path)
+    self.db = DatabaseDriver.DbDriver(self.db_path, self.schema_path)
 
   # Test Database was created successfully
   def test_create_database(self):

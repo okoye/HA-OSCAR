@@ -79,8 +79,7 @@ class SysConfigurator:
     
        #For planned future support of other synchronization mechanisms like 
        #DRBD, CSYNC ...
-       self.conf_values['DATA_SYNC'] = "RSYNC"
-       
+       self.conf_values['DATA_SYNC'] = "RSYNC"   
     #######################################################################
     #We move on to network stuffs
     #This code extracts the list of active interfaces for display to admin

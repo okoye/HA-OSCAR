@@ -23,8 +23,8 @@ from sys import exit
 import sqlite3
 
 # Creates Database and Table
+db_path = "/usr/share/haoscar/hadb"
 def initialize():
-  db_path = "/usr/share/haoscar/hadb"
   # Delete sqlite database file if it already exists
   try:
     unlink(db_path)
@@ -45,20 +45,20 @@ def initialize():
 # Insert given dictionary value
 # Eg: insert_db ("HAConfig", {"OS":"Debian"})
 def insert_db(table, get_dict):
-  get_key = get_dict.keys()[0]
-  get_value = get_dict.values()[0]
-  conn = sqlite3.connect('hadb')
+  conn = sqlite3.connect(db_path)
   c = conn.cursor()
-  query = "INSERT INTO " + table + " (name, value) "
-  query += "VALUES('%s' , '%s')" % (get_key, get_value)
-  c.execute(query)
+  for k, v in get_dict.iteritems():
+    query = "INSERT INTO " + table + " (name, value) "
+    query += "VALUES('%s' , '%s')" % (k, v)
+    print ("Debug: query is=> %s" %(query))
+    c.execute(query)
   conn.commit()
   c.close()
 
 # Returns a dictionary matching the given key from given table
 # Eg: select_db ("HAConfig", "OS") => {'OS': 'Debian'}
 def select_db(table, get_key):
-  conn = sqlite3.connect('hadb')
+  conn = sqlite3.connect(db_path)
   c = conn.cursor()
   result = {}
   query = "SELECT * from %s WHERE name = '%s'" % (table, get_key)
@@ -74,7 +74,7 @@ def select_db(table, get_key):
 #     update_db ("HAConfig", {"OS" : "Redhat"})
 #     select_db ("HAConfig", "OS") => {'OS': 'Redhat'}
 def update_db(table, get_dict):
-  conn = sqlite3.connect('hadb')
+  conn = sqlite3.connect(db_path)
   c = conn.cursor()
   get_key = get_dict.keys()[0]
   get_value = get_dict.values()[0]

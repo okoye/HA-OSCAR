@@ -20,10 +20,6 @@
 from os import system 
 from os import path
 import commands
-import socket
-import fcntl
-import struct
-import array
 import halib.Logger as logger
 import halib.chaif.DatabaseDriver as ddriver
 import halib.chaif.SanityCheck as scheck

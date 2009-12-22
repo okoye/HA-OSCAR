@@ -22,9 +22,12 @@ from os import path, unlink
 from sys import exit
 import sqlite3
 
+db_path = ""
+
 # Creates Database and Table
-db_path = "/usr/share/haoscar/hadb"
-def initialize():
+def initialize(get_db_path = "/usr/share/haoscar/hadb"):
+  global db_path
+  db_path = get_db_path
   # Delete sqlite database file if it already exists
   try:
     unlink(db_path)
@@ -45,6 +48,7 @@ def initialize():
 # Insert given dictionary value
 # Eg: insert_db ("HAConfig", {"OS":"Debian"})
 def insert_db(table, get_dict):
+  global db_path
   conn = sqlite3.connect(db_path)
   c = conn.cursor()
   for k, v in get_dict.iteritems():
@@ -58,6 +62,7 @@ def insert_db(table, get_dict):
 # Returns a dictionary matching the given key from given table
 # Eg: select_db ("HAConfig", "OS") => {'OS': 'Debian'}
 def select_db(table, get_key):
+  global db_path
   conn = sqlite3.connect(db_path)
   c = conn.cursor()
   result = {}
@@ -74,6 +79,7 @@ def select_db(table, get_key):
 #     update_db ("HAConfig", {"OS" : "Redhat"})
 #     select_db ("HAConfig", "OS") => {'OS': 'Redhat'}
 def update_db(table, get_dict):
+  global db_path
   conn = sqlite3.connect(db_path)
   c = conn.cursor()
   get_key = get_dict.keys()[0]

@@ -36,6 +36,7 @@ def initialize():
    str_value = ""
    conf_values = dict()
    paths = []
+   validated_paths = []
    #By default, it attempts to replicate home dir if it is in its own label. 
    if (os.path.isdir('/home')):
       logger.subsection("added home directory '/home' for replication :)")
@@ -45,19 +46,27 @@ def initialize():
       logger.subsection("could not find home partition for synchronization")
       str_value  = raw_input("Enter paths to your user data directories seperated by commas [e.g /data]: ")
    #Do basic error checking to make sure that is a valid directory
-   logger.subsection("is "+str_value+" a valid directory[ies]")
-   str_value.replace(' ','')
+   logger.subsection("is "+str_value+" a valid directory[ies]?")
+   str_value.replace(" ","")
    if(str_value is not ""):
-      paths.append(str_value.split(','))
-   print paths
+      paths = paths + str_value.split(',')
    for path in paths:
-      if(not os.path.exists(path)):
-         logger.subsection("invalid path: "+path)
-         paths.remove(path)
+      if(os.path.exists(path)):
+         logger.subsection(path+" is a valid path")
+         validated_paths.append(path) #TODO: Fix truncation bug that exists
 
-   logger.subsection("monitored directories: ".join([`path` for path in paths]))
-   conf_values['DATA_DIR'] = "".join([`path` for path in paths])
-   conf_values['DATA_SYNC'] = "CSYNC"
+   count = 0
+   path_hash = dict()
+   #print "DEBUG: Original Paths are: ",paths
+   #print "DEBUG: Validated Paths are: ",validated_paths
+   for path in validated_paths:
+      path_hash[count] = path
+      count += 1
+   conf_values['DATA_DIR'] = path_hash
+
+   #For planned future support of other synchronization mechanisms like 
+   #DRBD, CSYNC ...
+   conf_values['DATA_SYNC'] = "RSYNC"
    #######################################################################
    #We move on to network stuffs
    #This code extracts the list of active interfaces for display to admin

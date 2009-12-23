@@ -27,13 +27,15 @@ import sys
 def open(message=None):
    if message is None:
       os.chdir(os.getenv("HAS_HOME"))
-      logger.subsection("Finished installation")
+      logger.subsection("cleaning up environment")
       os.system("rm -rf .has_lock_file")
    else:
-      logger.subsection("Your installation failed with message:")
+      logger.subsection("your installation failed with message:")
       logger.subsection(message)
       os.chdir(os.getenv("HAS_HOME"))
       os.system("rm -rf .has_lock_file")
+
+   #TODO: Call Uniinstallation routines
    sys.exit(0)
 
 

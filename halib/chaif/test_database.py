@@ -52,7 +52,7 @@ class TestSequenceFunctions(unittest.TestCase):
   # Test Update method works properly
   def test_update(self):
     self.db.update_db('hainfo', {'os':'windows'})
-    self.assertEqual({'os':'window'}, self.db.select_db('hainfo', 'os'))
+    self.assertEqual({'os':'windows'}, self.db.select_db('hainfo', 'os'))
 
 if __name__ == '__main__':
   unittest.main()

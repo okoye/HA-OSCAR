@@ -22,70 +22,64 @@ from os import path, unlink
 from sys import exit
 import sqlite3
 
-db_path = ""
+class DbDriver:
 
-# Creates Database and Table
-def initialize(get_db_path = "/usr/share/haoscar/hadb"):
-  global db_path
-  db_path = get_db_path
-  # Delete sqlite database file if it already exists
-  try:
-    unlink(db_path)
-  except OSError:
-    pass
-  conn = sqlite3.connect(db_path)
-  c = conn.cursor()
-  c.execute('''
-  CREATE TABLE hainfo
-  (
-    name VARCHAR(100),
-    value VARCHAR(100)
-  )
-  ''')
-  conn.commit()
-  c.close()
+  def __init__(self, default_db_path = "/usr/share/haoscar/hadb", default_schema_path="/usr/share/haoscar/schema.sql"):
+    self.db_path = default_db_path
+    self.schema_path = default_schema_path
 
-# Insert given dictionary value
-# Eg: insert_db ("HAConfig", {"OS":"Debian"})
-def insert_db(table, get_dict):
-  global db_path
-  conn = sqlite3.connect(db_path)
-  c = conn.cursor()
-  for k, v in get_dict.iteritems():
+  def create_database(self):
+    # Delete sqlite database file if it already exists
+    try:
+      unlink(self.db_path)
+    except OSError:
+      pass
+
+    if not path.exists(self.schema_path):
+      print "Cannot access database schema file"
+      exit(2)
+
+    # Create database creation query from schema file
+    conn = sqlite3.connect(self.db_path)
+    c = conn.cursor()
+    query = ""
+    f = open(self.schema_path)
+    for line in f:
+      query += line
+
+    try:
+      c.execute(query)
+    except:
+      print "Invalid SQL syntax"
+      print "Query was :" 
+      print query
+      exit(2)
+    conn.commit()
+    c.close()
+
+
+  def insert_db(self, table, get_dict):
+    if not path.exists(self.db_path):
+      print "Cannot access database"
+      exit(2)
+
+    k = get_dict.keys()[0]
+    v = get_dict.values()[0]
+
+    if not type(k)==str and type(v)==str:
+      print "Dictionary key and value must be of type String"
+      exit(2)
+
+    conn = sqlite3.connect(self.db_path)
+    c = conn.cursor()
     query = "INSERT INTO " + table + " (name, value) "
     query += "VALUES('%s' , '%s')" % (k, v)
-    print ("Debug: query is=> %s" %(query))
-    c.execute(query)
-  conn.commit()
-  c.close()
-
-# Returns a dictionary matching the given key from given table
-# Eg: select_db ("HAConfig", "OS") => {'OS': 'Debian'}
-def select_db(table, get_key):
-  global db_path
-  conn = sqlite3.connect(db_path)
-  c = conn.cursor()
-  result = {}
-  query = "SELECT * from %s WHERE name = '%s'" % (table, get_key)
-  print query
-  c.execute(query) 
-  for row in c:
-    result[row[0]] = row[1]
-  c.close()
-  return result
-
-# Updates the value of specified field from given dictionary
-# Eg: select_db ("HAConfig", "OS") => {'OS': 'Debian'}
-#     update_db ("HAConfig", {"OS" : "Redhat"})
-#     select_db ("HAConfig", "OS") => {'OS': 'Redhat'}
-def update_db(table, get_dict):
-  global db_path
-  conn = sqlite3.connect(db_path)
-  c = conn.cursor()
-  get_key = get_dict.keys()[0]
-  get_value = get_dict.values()[0]
-  query = "UPDATE '%s' SET value = '%s' WHERE name = '%s'" % (table, get_value, get_key)
-  c.execute(query)
-  conn.commit()
-  c.close()
-  c.close()
+    try:
+      c.execute(query)
+    except:
+      print "Invalid SQL syntax"
+      print "Query was :" 
+      print query
+      exit(2)
+    conn.commit()
+    c.close()

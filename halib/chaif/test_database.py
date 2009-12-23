@@ -19,17 +19,21 @@
 
 #   Unit tests for DatabaseDriver in CHAIF
 
-import DatabaseDriver as db
+import DatabaseDriver
+from os import path
 import unittest
 
 class TestSequenceFunctions(unittest.TestCase):
 
   def setUp(self):
-    db.initialize("/tmp/tempdb")
+    self.db_path = "/tmp/db"
+    self.schema_path = "/tmp/schema.sql"
+    self.db = DatabaseDriver.DbDriver(self.db_path, self.schema_path)
 
-  def testInsert(self):
-    db.insert_db("Table", {'foo':'bar'})
-    self.assertEqual (db.select_db("Table", "foo"), {'foo':'bar'})
+  # Test Database was created successfully
+  def test_create_database(self):
+    self.db.create_database()
+    self.assert_(path.exists(self.db_path))
 
 if __name__ == '__main__':
   unittest.main()

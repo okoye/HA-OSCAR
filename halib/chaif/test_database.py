@@ -27,7 +27,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
   def setUp(self):
     self.db_path = "/tmp/db"
-    self.schema_path = "/tmp/schema.sql"
+    self.schema_path = "/usr/share/haoscar/schema.sql"
     self.db = DatabaseDriver.DbDriver(self.db_path, self.schema_path)
 
   # Test Database was created successfully

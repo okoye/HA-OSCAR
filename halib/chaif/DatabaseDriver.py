@@ -57,6 +57,29 @@ class DbDriver:
     conn.commit()
     c.close()
 
+# Returns list of tables in database as a list
+  def get_tables(self):
+    if not path.exists(self.db_path):
+      print "Cannot access database file at", self.db_path
+      exit(2)
+
+    conn = sqlite3.connect(self.db_path)
+    c = conn.cursor()
+    query = "select name from sqlite_master where type='table'"
+
+    try:
+      c.execute(query)
+    except:
+      print "Invalid SQL syntax"
+      print "Query was :" 
+      print query
+      exit(2)
+    result = []
+    for row in c:
+      result.append(row[0])  
+    c.close()
+    return result
+
 
   def insert_db(self, table, get_dict):
     if not path.exists(self.db_path):
@@ -66,8 +89,14 @@ class DbDriver:
     k = get_dict.keys()[0]
     v = get_dict.values()[0]
 
-    if not type(k)==str and type(v)==str:
+    if not type(k)==str or type(v)==str:
       print "Dictionary key and value must be of type String"
+      exit(2)
+
+    existing_tables = []
+    existing_tables = self.get_tables()
+    if table not in existing_tables:
+      print table, "does not exist in database"
       exit(2)
 
     conn = sqlite3.connect(self.db_path)
@@ -83,3 +112,4 @@ class DbDriver:
       exit(2)
     conn.commit()
     c.close()
+

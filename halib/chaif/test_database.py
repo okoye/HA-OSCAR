@@ -35,5 +35,15 @@ class TestSequenceFunctions(unittest.TestCase):
     self.db.create_database()
     self.assert_(path.exists(self.db_path))
 
+  # Test get_tables method works 
+  def test_get_tables(self):
+    result = []
+    result = self.db.get_tables()
+    self.assertEqual(result, ["hainfo"])
+
+  # Test Insert method works properly
+  def test_insert(self):
+    self.db.insert_db("hainfo", {'f':1})
+
 if __name__ == '__main__':
   unittest.main()

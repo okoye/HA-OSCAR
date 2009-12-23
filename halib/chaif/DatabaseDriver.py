@@ -81,6 +81,41 @@ class DbDriver:
     return result
 
 
+# Returns dictionary of key-value pair if key exists in given table of database
+  def select_db(self, table, key):
+    if not path.exists(self.db_path):
+      print "Cannot access database file at", self.db_path
+      exit(2)
+    
+    existing_tables = []
+    existing_tables = self.get_tables()
+    if table not in existing_tables:
+      print table, "does not exist in database"
+      exit(2)
+
+    if type(key)!=str or type(table)!=str:
+      print key,table," both must of type String"
+      exit(2)
+
+    conn = sqlite3.connect(self.db_path)
+    c = conn.cursor()
+    query = "SELECT * from %s WHERE name = '%s'" % (table, key)
+
+    try:
+      c.execute(query)
+    except:
+      print "Invalid SQL syntax"
+      print "Query was :" 
+      print query
+      exit(2)
+    result = {}
+    for row in c:
+      result[row[0]] = row[1]
+    c.close()
+    return result
+
+
+  # Insert given dictionary into given table of database
   def insert_db(self, table, get_dict):
     if not path.exists(self.db_path):
       print "Cannot access database"
@@ -89,7 +124,7 @@ class DbDriver:
     k = get_dict.keys()[0]
     v = get_dict.values()[0]
 
-    if not type(k)==str or type(v)==str:
+    if type(k)!=str or type(v)!=str:
       print "Dictionary key and value must be of type String"
       exit(2)
 
@@ -103,6 +138,42 @@ class DbDriver:
     c = conn.cursor()
     query = "INSERT INTO " + table + " (name, value) "
     query += "VALUES('%s' , '%s')" % (k, v)
+    try:
+      c.execute(query)
+    except:
+      print "Invalid SQL syntax"
+      print "Query was :" 
+      print query
+      exit(2)
+    conn.commit()
+    c.close()
+
+  # Update given table with new dictionary key-value pair
+  def update_db(self, table, get_dict):
+    if not path.exists(self.db_path):
+      print "Cannot access database"
+      exit(2)
+
+    if type(get_dict) != dict:
+      print get_dict, " must be of type Dictionary"
+      exit(2)
+
+    k = get_dict.keys()[0]
+    v = get_dict.values()[0]
+
+    if type(k)!=str or type(v)!=str:
+      print "Dictionary key and value must be of type String"
+      exit(2)
+
+    existing_tables = []
+    existing_tables = self.get_tables()
+    if table not in existing_tables:
+      print table, "does not exist in database"
+      exit(2)
+
+    conn = sqlite3.connect(self.db_path)
+    c = conn.cursor()
+    query = "UPDATE '%s' SET value = '%s' WHERE name = '%s'" % (table, v, k)
     try:
       c.execute(query)
     except:

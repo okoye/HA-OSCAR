@@ -43,7 +43,16 @@ class TestSequenceFunctions(unittest.TestCase):
 
   # Test Insert method works properly
   def test_insert(self):
-    self.db.insert_db("hainfo", {'f':1})
+    self.db.insert_db("hainfo", {'os':'linux'})
+
+  # Test Select method works properly
+  def test_select(self):
+    self.assertEqual({'os':'linux'}, self.db.select_db('hainfo', 'os'))
+
+  # Test Update method works properly
+  def test_update(self):
+    self.db.update_db('hainfo', {'os':'windows'})
+    self.assertEqual({'os':'window'}, self.db.select_db('hainfo', 'os'))
 
 if __name__ == '__main__':
   unittest.main()

@@ -20,21 +20,18 @@
 --                    	All rights reserved.
 
 -- System Config Info
-CREATE TABLE IF NOT EXISTS Primary_Configuration(
-      HOSTNAME TEXT(50),
-      NIC_INFO TEXT(5),
-      IP_ADDR  TEXT(20)
+CREATE TABLE Primary_Configuration(
+      HOSTNAME TEXT,
+      NIC_INFO TEXT,
+      IP_ADDR  TEXT
 );
-
-CREATE TABLE IF NOT EXISTS Secondary_Configuration(
-      HOSTNAME TEXT(50),
-      NIC_INFO TEXT(5),
-      IP_ADDR TEXT(20)
+CREATE TABLE Secondary_Configuration(
+      HOSTNAME TEXT,
+      NIC_INFO TEXT,
+      IP_ADDR TEXT
 );
-
-CREATE TABLE IF NOT EXISTS General_Configurations(
+CREATE TABLE General_Configuration(
       SERVICES BLOB,
       DATA_DIR BLOB,
-      DATA_SYNC TEXT(50)
+      DATA_SYNC TEXT
 );
-

@@ -43,7 +43,6 @@ class SysConfigurator:
         self.dataConfig()
         self.netConfig()
         self.serviceConfig()
-        self.databaseConfig()
         logger.subsection("finished generating configuration...")
         return self.conf_values
     
@@ -67,12 +66,10 @@ class SysConfigurator:
        for path in self.paths:
           if(os.path.exists(path)):
              logger.subsection(path+" is a valid path")
-             self.validated_paths.append(path) #TODO: Fix truncation bug that exists and no duplicates
+             self.validated_paths.append(path)
     
        count = 0
        path_hash = dict()
-       #print "DEBUG: Original Paths are: ",paths
-       #print "DEBUG: Validated Paths are: ",validated_paths
        for path in self.validated_paths:
           path_hash[count] = path
           count += 1
@@ -101,7 +98,7 @@ class SysConfigurator:
        if (len(self.interface_list) == 1):
           logger.subsection("detected only one interface: "+self.interface_list[0])
           logger.subsection("adding to config file")
-          self.conf_values['NIC_INFO_P'] = self.interface_list[0]
+          self.conf_values['NIC_INFO'] = self.interface_list[0]
        else:
           temp = ""
           for i in self.interface_list:
@@ -112,8 +109,8 @@ class SysConfigurator:
           cmd_result = commands.getoutput("ifconfig "+self.str_value)
           if ('error fetching' in cmd_result or self.str_value is ""):
              logger.subsection("invalid device specified, skipping for now")
-             self.conf_values['NIC_INFO_P'] = ""
-             self.conf_values['IP_ADDR_P'] = ""
+             self.conf_values['NIC_INFO'] = ""
+             self.conf_values['IP_ADDR'] = ""
           else:
              logger.subsection("adding interface to config file, proceeding...")
              self.conf_values['NIC_INFO_P'] =self.str_value
@@ -123,7 +120,7 @@ class SysConfigurator:
                          0x8915,
                          struct.pack('256s', self.str_value[:15])
                          )[20:24])
-             self.conf_values['IP_ADDR_P']=self.ip_addr
+             self.conf_values['IP_ADDR']=self.ip_addr
     
     ########################################################################
     #We finally provide a default list of services to be monitored 'ssh daemon' really
@@ -136,8 +133,8 @@ class SysConfigurator:
     #######################################################################
     #Finally, we describe the type of database to be created by our database
     #abstraction method.
-    def databaseConfig(self):
-       self.conf_values['DB_TYPE']="sqlite"
+    #def databaseConfig(self):
+       #self.conf_values['DB_TYPE']="sqlite"
     
        #un-necessary methods, we will use a default uname and password
        #uname = raw_input("Enter database username(only alpha numeric passwords): ")

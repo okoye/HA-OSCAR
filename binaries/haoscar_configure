@@ -78,8 +78,9 @@ def main():
    logger.section("Database Initialization")
    chaif.databaseSetup()
 
-   logger.subsection("populating database")
-   ddriver.insert_db('hainfo',sys_config)
+   logger.subsection("populating database with primary config data")
+   database_driver = ddriver.DbDriver()
+   database_driver.insert_db('Primary_Configuration',sys_config)
    
    #Next, connect to remote system and retrieve facts about sec server
    #TODO: Implement connection with remote system

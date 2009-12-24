@@ -1,1 +1,1 @@
-__all__ = ["chaif", "hatci", "web", "Logger", "Env", "Exit"]
+__all__ = ["chaif", "hatci", "Logger", "Env", "Exit"]

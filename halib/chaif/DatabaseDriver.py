@@ -141,12 +141,12 @@ class DbDriver:
     query = query.rstrip(',')
     query += ") VALUES ("
     for key in get_dict.keys():
+      query += "'"
       query += get_dict[key]
+      query += "'"
       query += ","
     query = query.rstrip(',')
     query += ")"
-
-    c.execute(query)
 
     try:
        c.execute(query)

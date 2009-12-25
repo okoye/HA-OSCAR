@@ -79,9 +79,8 @@ def main():
    chaif.databaseSetup()
 
    logger.subsection("populating database with primary config data")
-   configdata = ["HOSTNAME", "NIC_INFO", "IP_ADDR"]
+   configdata = ["HOSTNAME", "NIC_INFO", "IP_ADDR"] #Primary/Sec Config Data
    temp = dict()
-   print "DEBUG: ",sys_config
    for data in configdata:
       temp[data] = sys_config[data]
 

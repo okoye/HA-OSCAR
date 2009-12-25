@@ -114,7 +114,7 @@ class SysConfigurator:
              self.conf_values['IP_ADDR'] = ""
           else:
              logger.subsection("adding interface to config file, proceeding...")
-             self.conf_values['NIC_INFO_P'] =self.str_value
+             self.conf_values['NIC_INFO'] =self.str_value
              logger.subsection("adding ip address of associated interface...")
              self.ip_addr = socket.inet_ntoa(fcntl.ioctl(
                          s.fileno(),

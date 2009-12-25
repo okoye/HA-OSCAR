@@ -116,17 +116,10 @@ class DbDriver:
     return result
 
 
-  # Insert given dictionary into given table of database
+  # Insert given list into given table of database
   def insert_db(self, table, get_dict):
     if not path.exists(self.db_path):
       logger.subsection("Cannot access database")
-      exit(2)
-
-    k = get_dict.keys()[0]
-    v = get_dict.values()[0]
-
-    if type(k)!=str or type(v)!=str:
-      logger.subsection("Dictionary key and value must be of type String")
       exit(2)
 
     existing_tables = []
@@ -137,10 +130,23 @@ class DbDriver:
 
     conn = sqlite3.connect(self.db_path)
     c = conn.cursor()
-    query = "INSERT INTO " + table + " (name, value) "
-    query += "VALUES('%s' , '%s')" % (k, v)
+
+    #Set up the string for insertion
+    #TODO: Include an input sanitization method to 'silence' special chars
+    query = "INSERT INTO "+table+" ("
+    for key in get_dict.keys(): #Possible error source if keys
+       query += key              #are retrieved differently each time.
+       query += ","
+    query = query.rstrip(',')
+    query += ") VALUES ("
+    for key in get_dict.keys():
+      query += get_dict[key]
+      query += ","
+    query = query.rstrip(',')
+    query += ")"
+
     try:
-      c.execute(query)
+       c.execute(query)
     except:
       logger.subsection("Invalid SQL syntax")
       logger.subsection("Query was :") 

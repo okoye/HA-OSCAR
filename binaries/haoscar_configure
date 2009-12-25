@@ -85,9 +85,16 @@ def main():
       temp[data] = sys_config[data]
 
    database_driver = ddriver.DbDriver()
-   database_driver.insert_db('Primary_Configuration',temp)
+   if mode is 'primary':
+      database_driver.insert_db('Primary_Configuration',temp)
+   elif mode is 'secondary':
+      database_driver.insert_db('Secondary_Configuration', temp)
+   else:
+      logger.subsection("an error has occured, installation cannot continue")
+      exit.open("unknown installation mode.")
    
-   #Next, connect to remote system and retrieve facts about sec server
+   #Next, connect to remote system and retrieve facts about sec if we are
+   #are primary server else just open listening server for connections
    #TODO: Implement connection with remote system
 
    #We start with the HATCI

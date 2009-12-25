@@ -21,17 +21,17 @@
 
 -- System Config Info
 CREATE TABLE Primary_Configuration(
-      HOSTNAME TEXT,
-      NIC_INFO TEXT,
-      IP_ADDR  TEXT
+      HOSTNAME text,
+      NIC_INFO text,
+      IP_ADDR  text
 );
 CREATE TABLE Secondary_Configuration(
-      HOSTNAME TEXT,
-      NIC_INFO TEXT,
-      IP_ADDR TEXT
+      HOSTNAME text,
+      NIC_INFO text,
+      IP_ADDR text
 );
 CREATE TABLE General_Configuration(
-      SERVICES BLOB,
-      DATA_DIR BLOB,
-      DATA_SYNC TEXT
+      SERVICES blob,
+      DATA_DIR blob,
+      DATA_SYNC text
 );

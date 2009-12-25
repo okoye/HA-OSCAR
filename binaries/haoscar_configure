@@ -79,8 +79,14 @@ def main():
    chaif.databaseSetup()
 
    logger.subsection("populating database with primary config data")
+   configdata = ["HOSTNAME", "NIC_INFO", "IP_ADDR"]
+   temp = dict()
+   print "DEBUG: ",sys_config
+   for data in configdata:
+      temp[data] = sys_config[data]
+
    database_driver = ddriver.DbDriver()
-   database_driver.insert_db('Primary_Configuration',sys_config)
+   database_driver.insert_db('Primary_Configuration',temp)
    
    #Next, connect to remote system and retrieve facts about sec server
    #TODO: Implement connection with remote system

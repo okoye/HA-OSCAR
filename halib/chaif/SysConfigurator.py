@@ -43,6 +43,7 @@ class SysConfigurator:
         self.dataConfig()
         self.netConfig()
         self.serviceConfig()
+        self.hostnameConfig()
         logger.subsection("finished generating configuration...")
         return self.conf_values
     
@@ -144,6 +145,7 @@ class SysConfigurator:
        #conf_values['DB_PASS']=passwd
     
        #######################################################################
-    
+    def hostnameConfig(self):
+      self.conf_values['HOSTNAME'] =commands.getoutput("uname -n")
        
 

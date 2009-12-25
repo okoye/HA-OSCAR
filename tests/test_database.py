@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 #
-# Copyright (c) 2009 Himanshu Chhetri <himanshuchhetri@gmail.com>        
+# Copyright (c) 2009 Himanshu Chhetri <himanshuchhetri@gmail.com>
+#                    Okoye Chuka <okoye9@gmail.com>
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -35,26 +36,27 @@ class TestSequenceFunctions(unittest.TestCase):
   # Test Database was created successfully
   def test_create_database(self):
     self.db.create_database()
-    self.assert_(path.exists(self.db_path))
+    self.assert_(path.exists(self.db_path)) #Invalid test
 
   # Test get_tables method works 
   def test_get_tables(self):
     result = []
     result = self.db.get_tables()
-    self.assertEqual(result, ["hainfo"])
+    self.assertEqual(result, ["Primary_Configuration"])
 
   # Test Insert method works properly
   def test_insert(self):
-    self.db.insert_db("hainfo", {'os':'linux'})
+    self.db.insert_db("Primary_Configuration", {'os':'linux'})
 
   # Test Select method works properly
   def test_select(self):
-    self.assertEqual({'os':'linux'}, self.db.select_db('hainfo', 'os'))
+    self.assertEqual({'os':'linux'}, self.db.select_db('Primary_Configuration', 'os'))
 
   # Test Update method works properly
   def test_update(self):
-    self.db.update_db('hainfo', {'os':'windows'})
-    self.assertEqual({'os':'windows'}, self.db.select_db('hainfo', 'os'))
+    self.db.update_db('Primary_Configuration', {'os':'windows'})
+    self.assertEqual({'os':'windows'},
+    self.db.select_db('Primary_Configuration', 'os'))
 
 if __name__ == '__main__':
   unittest.main()

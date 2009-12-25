@@ -115,7 +115,7 @@ class DbDriver:
     c.close()
     return result
 
-
+   
   # Insert given list into given table of database
   def insert_db(self, table, get_dict):
     if not path.exists(self.db_path):
@@ -130,7 +130,8 @@ class DbDriver:
 
     conn = sqlite3.connect(self.db_path)
     c = conn.cursor()
-
+    
+    #Modified: December 25, 2009 by Chuka Okoye
     #Set up the string for insertion
     #TODO: Include an input sanitization method to 'silence' special chars
     query = "INSERT INTO "+table+" ("
@@ -144,6 +145,8 @@ class DbDriver:
       query += ","
     query = query.rstrip(',')
     query += ")"
+
+    c.execute(query)
 
     try:
        c.execute(query)

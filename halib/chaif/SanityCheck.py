@@ -26,7 +26,7 @@ errorsList = []
 def initialize():
 	rootCheck()
 	rubyCheck()
-	#sshCheck is un-necessary: Chuka
+	#sshCheck is un-necessary: Chuka Okoye
 	#sshCheck()
 	networkCheck()
 	osCheck()
@@ -37,7 +37,8 @@ def rootCheck():
 		errorsList.append("Not run as root.")
 
 def rubyCheck():
-	if "not found" in getoutput("ruby -v"):
+	if "not found" in getoutput("ruby -v")\
+        and "no ruby" in getoutput("which ruby"):
 		errorsList.append("Ruby not found.")
 
 def sshCheck():

@@ -20,9 +20,10 @@
 import sys
 import commands
 import halib.Logger as logger
-import halib.chaif.DatabaseDriver as ddriver
+import halib.chaif.DatabaseDriver as database_driver
 from os import path
 from os import system
+import halib.Exit as exit
 
 init_comment = """\n#HA-OSCAR auto generated heartbeat authentication
 #file. You can change these values but ensure that the file remains
@@ -67,9 +68,9 @@ def configure():
 	#while("NIC_INFO=" not in line):
 	#	line = FILE.readline()
 	#temp = line.split("=")
-
-	nic_info = ddriver.select_db("hainfo","NIC_INFO_P")
-	temp = nic_info['NIC_INFO_P']
+        ddriver = database_driver.DbDriver() 
+	nic_info = ddriver.select_db("hainfo","NIC_INFO")
+	temp = nic_info['NIC_INFO']
 	if(len(nic_info)):
 		logger.subsection("using interface "+nic_info['NIC_INFO_P'])
 		hacf_value.append("bcast "+nic_info['NIC_INFO_P'])

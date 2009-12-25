@@ -86,7 +86,6 @@ def main():
 
    database_driver = ddriver.DbDriver()
 
-   print "mode is: ",mode
    if mode == "primary":
       database_driver.insert_db('Primary_Configuration',temp)
       logger.subsection("sucessfully populated data for primary server")

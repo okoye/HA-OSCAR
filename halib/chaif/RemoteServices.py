@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 #
 # Copyright (c) 2009 Okoye Chuka D.<okoye9@gmail.com>
-#                    Himanshu Chhetri <himanshuchhetri@gmail.com>
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -22,6 +21,7 @@ import os
 import commands
 import socket
 import SocketServer
+import time
 from marshal import dumps, loads
 import halib.chaif.DatabaseDriver as ddriver
 import halib.Logger as logger
@@ -47,24 +47,23 @@ class RemoteSystem:
    def client(self, ip):
       #Create a TCP socket
       sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-      retry = true
+      retry = True
       count = 0
       #Initiate connection
-      while(retry == true):
+      while(retry == True):
          try:
-            retry = false
-            sock.connect(ip, self.port)
+            retry = False
+            sock.connect((ip,self.port))
          except socket.error:
             if(count < 1 ):
-               retry = true
+               retry = True
                count += 1
-               logger.subsection("listening server not ready. retrying in 2\
-               mins...")
+               logger.subsection("listening server not ready. retrying in 2 mins...")
+               time.sleep(120)
          except socket.timeout:
             exit.open("could not connect to remote server")
          except:
-            exit.open("a major connection error has occured. check your \
-            address and retry installation.")
+            exit.open("a major connection error has occured. check your address and retry installation.")
       #Receive data from server
       self.data = sock.recv(self.port)
       sock.close
@@ -85,12 +84,21 @@ class RemoteSystem:
    #        an error, it resends then quits
    #@param: hash_data, data packet to be sent
    def server(self, hash_data):
-      #Some globals
+      hash_data['TYPE'] = self.data_type #Control flag
       #We serialize the data to be sent
       self.data = dumps(hash_data)
       #Create server and bind to ourselves
-      server = SocketServer.TCPServer(("localhost", self.port), MyTCPHandler)
-      server.handle_request()
+      #server = SocketServer.TCPServer(("localhost", self.port), MyTCPHandler)
+      sock = socket.socket()
+      host = socket.gethostname()
+      port = self.port
+      sock.bind(host, port)
+      sock.listen(5)
+      client, addr = sock.accept()
+      logger.subsection("client connected from address "+addr)
+      client.send(self.data)
+      c.close()
+      #server.handle_request()
 
 #TCP Handler class
 class MyTCPHandler(SocketServer.BaseRequestHandler):

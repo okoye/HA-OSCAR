@@ -25,7 +25,7 @@ import getopt
 import halib.Env as env
 import halib.Logger as logger
 import halib.chaif.Chaif as chaif
-import halib.chaif.RemoteServices
+import halib.chaif.RemoteServices as RemoteServices
 import halib.chaif.DatabaseDriver as ddriver
 import halib.hatci.Heartbeat as heartbeat
 import halib.hatci.Rsync as datasync
@@ -102,6 +102,10 @@ def main():
       database_driver.insert_db('Secondary_Configuration', temp)
       logger.subsection("sucessfully populated data for secondary server")
       logger.subsection("awaiting connection from primary server")
+
+      #Setup details for remote connection
+      remote = RemoteServices.RemoteSystem("INIT")
+      remote.server(temp)
    else:
       logger.subsection("an error has occured, installation cannot continue")
       exit.open("unknown installation mode.")

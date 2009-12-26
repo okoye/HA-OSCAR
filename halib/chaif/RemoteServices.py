@@ -90,7 +90,7 @@ class RemoteSystem:
       sock = socket.socket()
       host = socket.gethostname()
       port = self.port
-      sock.bind(host, port)
+      sock.bind((host, port))
       sock.listen(5)
       client, addr = sock.accept()
       logger.subsection("client connected from address "+addr)

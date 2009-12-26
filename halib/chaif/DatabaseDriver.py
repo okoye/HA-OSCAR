@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# Copyright (c) 2009 Himanshu CHhetri <himanshuchhetri@gmail.com> 
+# Copyright (c) 2009 Himanshu Chhetri <himanshuchhetri@gmail.com> 
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -47,9 +47,8 @@ class DbDriver:
     f = open(self.schema_path)
     for line in f:
       query += line
-
     try:
-      c.execute(query)
+      c.executescript(query)
     except:
       logger.subsection("Invalid SQL syntax")
       logger.subsection("Query was :") 
@@ -82,8 +81,9 @@ class DbDriver:
     return result
 
 
-# Returns dictionary of key-value pair if key exists in given table of database
-  def select_db(self, table, key):
+# Returns table in the form of a dictionary
+# TODO : Fix select_db bug
+  def select_db(self, table):
     if not path.exists(self.db_path):
       logger.subsection("Cannot access database file at "+ self.db_path)
       exit(2)
@@ -91,16 +91,18 @@ class DbDriver:
     existing_tables = []
     existing_tables = self.get_tables()
     if table not in existing_tables:
-      logger.subsection(table+ " does not exist in database")
+      logger.subsection(table + " does not exist in database")
       exit(2)
 
-    if type(key)!=str or type(table)!=str:
-      logger.subsection(key+" "+table+" both must of type String")
+    if type(table)!=str:
+      logger.subsection(table + " must of type String")
       exit(2)
 
     conn = sqlite3.connect(self.db_path)
+    conn.row_factory = sqlite3.Row
     c = conn.cursor()
-    query = "SELECT * from %s WHERE name = '%s'" % (table, key)
+    query = "SELECT * from "
+    query += table
 
     try:
       c.execute(query)
@@ -109,14 +111,21 @@ class DbDriver:
       logger.subsection("Query was :") 
       logger.subsection(query)
       exit(2)
+
+    r = c.fetchone()
+    columns = r.keys()
     result = {}
+    n = 0
     for row in c:
-      result[row[0]] = row[1]
+      result[columns[n]] = row[1]
+      #result[row[0]] = row[1]
+      n += 1
     c.close()
-    return result
+    #return result
+    return row
 
    
-  # Insert given hash into given table of database
+  # Insert given list into given table of database
   def insert_db(self, table, get_dict):
     if not path.exists(self.db_path):
       logger.subsection("Cannot access database")
@@ -131,12 +140,9 @@ class DbDriver:
     conn = sqlite3.connect(self.db_path)
     c = conn.cursor()
     
-    #Modified: December 25, 2009 by Chuka Okoye
-    #Set up the string for insertion
-    #TODO: Include an input sanitization method to 'silence' special chars
     query = "INSERT INTO "+table+" ("
-    for key in get_dict.keys(): #Possible error source if keys
-       query += key              #are retrieved differently each time.
+    for key in get_dict.keys():
+       query += key            
        query += ","
     query = query.rstrip(',')
     query += ") VALUES ("
@@ -157,40 +163,3 @@ class DbDriver:
       exit(2)
     conn.commit()
     c.close()
-
-  # Update given table with new dictionary key-value pair
-  def update_db(self, table, get_dict):
-    if not path.exists(self.db_path):
-      logger.subsection("Cannot access database")
-      exit(2)
-
-    if type(get_dict) != dict:
-      logger.subsection(get_dict+ " must be of type Dictionary")
-      exit(2)
-
-    k = get_dict.keys()[0]
-    v = get_dict.values()[0]
-
-    if type(k)!=str or type(v)!=str:
-      logger.subsection("Dictionary key and value must be of type String")
-      exit(2)
-
-    existing_tables = []
-    existing_tables = self.get_tables()
-    if table not in existing_tables:
-      logger.subsection(table+ " does not exist in database")
-      exit(2)
-
-    conn = sqlite3.connect(self.db_path)
-    c = conn.cursor()
-    query = "UPDATE '%s' SET value = '%s' WHERE name = '%s'" % (table, v, k)
-    try:
-      c.execute(query)
-    except:
-      logger.subsection("Invalid SQL syntax")
-      logger.subsection("Query was :")
-      logger.subsection(query)
-      exit(2)
-    conn.commit()
-    c.close()
-

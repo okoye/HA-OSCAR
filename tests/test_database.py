@@ -30,7 +30,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
   def setUp(self):
     self.db_path = "/tmp/db"
-    self.schema_path = "/usr/share/haoscar/schema.sql"
+    self.schema_path = "/tmp/schema.sql"
     self.db = ddriver.DbDriver(self.db_path, self.schema_path)
 
   # Test Database was created successfully
@@ -42,21 +42,17 @@ class TestSequenceFunctions(unittest.TestCase):
   def test_get_tables(self):
     result = []
     result = self.db.get_tables()
-    self.assertEqual(result, ["Primary_Configuration"])
+    self.assertEqual(result, ["Primary_Configuration","Secondary_Configuration","General_Configuration"])
 
   # Test Insert method works properly
   def test_insert(self):
-    self.db.insert_db("Primary_Configuration", {'os':'linux'})
+    self.db.insert_db("Primary_Configuration", {"HOST_NAME":"crapper", "NIC_INFO":"0ABCD","IP_ADDR":"1.2.3.4"})
 
   # Test Select method works properly
   def test_select(self):
-    self.assertEqual({'os':'linux'}, self.db.select_db('Primary_Configuration', 'os'))
+    print self.db.select_db("Primary_Configuration")
 
   # Test Update method works properly
-  def test_update(self):
-    self.db.update_db('Primary_Configuration', {'os':'windows'})
-    self.assertEqual({'os':'windows'},
-    self.db.select_db('Primary_Configuration', 'os'))
 
 if __name__ == '__main__':
   unittest.main()

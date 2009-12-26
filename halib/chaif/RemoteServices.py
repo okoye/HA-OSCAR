@@ -71,11 +71,9 @@ class RemoteSystem:
       self.hash_data = loads(self.data)
       try:
          if(hash_data['TYPE'] != self.data_type):
-            exit.open("primary and secondary server out of sync, \
-            restart installation")
+            exit.open("primary and secondary server out of sync, restart installation")
       except:
-         exit.open("failed to read remote data configuration\
-         restart installation")
+         exit.open("failed to read remote data configuration restart installation")
       return self.hash_data
 
 

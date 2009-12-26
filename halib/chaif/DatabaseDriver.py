@@ -82,7 +82,6 @@ class DbDriver:
 
 
 # Returns table in the form of a dictionary
-# TODO : Fix select_db bug
   def select_db(self, table):
     if not path.exists(self.db_path):
       logger.subsection("Cannot access database file at "+ self.db_path)
@@ -98,11 +97,9 @@ class DbDriver:
       logger.subsection(table + " must of type String")
       exit(2)
 
-    conn = sqlite3.connect(self.db_path)
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
-    query = "SELECT * from "
-    query += table
+    query = "select * from " + table
 
     try:
       c.execute(query)
@@ -112,18 +109,13 @@ class DbDriver:
       logger.subsection(query)
       exit(2)
 
-    r = c.fetchone()
-    columns = r.keys()
     result = {}
+    r = c.fetchone()
     n = 0
-    for row in c:
-      result[columns[n]] = row[1]
-      #result[row[0]] = row[1]
+    for key in r.keys():
+      result[key] = r[n]
       n += 1
-    c.close()
-    #return result
-    return row
-
+    return result
    
   # Insert given list into given table of database
   def insert_db(self, table, get_dict):

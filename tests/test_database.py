@@ -49,10 +49,8 @@ class TestSequenceFunctions(unittest.TestCase):
     self.db.insert_db("Primary_Configuration", {"HOST_NAME":"crapper", "NIC_INFO":"0ABCD","IP_ADDR":"1.2.3.4"})
 
   # Test Select method works properly
-  def test_select(self):
-    print self.db.select_db("Primary_Configuration")
-
-  # Test Update method works properly
+  #def test_select(self):
+  #  print self.db.select_db("Primary_Configuration")
 
 if __name__ == '__main__':
   unittest.main()

@@ -25,6 +25,7 @@ import getopt
 import halib.Env as env
 import halib.Logger as logger
 import halib.chaif.Chaif as chaif
+import halib.chaif.RemoteServices
 import halib.chaif.DatabaseDriver as ddriver
 import halib.hatci.Heartbeat as heartbeat
 import halib.hatci.Rsync as datasync
@@ -85,20 +86,25 @@ def main():
       temp[data] = sys_config[data]
 
    database_driver = ddriver.DbDriver()
-
    if mode == "primary":
       database_driver.insert_db('Primary_Configuration',temp)
       logger.subsection("sucessfully populated data for primary server")
+
+      #Connect to secondary server and retrieve its INIT config info
+      remote = RemoteServices.RemoteSystem("INIT")
+      input = raw_input("Enter ip address of secondary server: ")
+      logger.subsection("start configuration on sec server with the switch '-m secondary'")
+      #TODO: Add error checking to ip input otherwise a crash will occur
+      remote_config = remote.client(input)
+      print "DEBUG: Remote Config is: ",remote_config
+      exit.open("Great test!")
    elif mode == "secondary":
       database_driver.insert_db('Secondary_Configuration', temp)
       logger.subsection("sucessfully populated data for secondary server")
+      logger.subsection("awaiting connection from primary server")
    else:
       logger.subsection("an error has occured, installation cannot continue")
       exit.open("unknown installation mode.")
-   
-   #Next, connect to remote system and retrieve facts about sec if we are
-   #are primary server else just open listening server for connections
-   #TODO: Implement connection with remote system
 
    #We start with the HATCI
    logger.section("HATCI Setup")

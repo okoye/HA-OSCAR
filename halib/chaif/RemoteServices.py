@@ -30,8 +30,8 @@ import halib.Exit as exit
 #Some globals
 #@des:   The RemoteSystem class is responsible for making connections between
 #        Primary and Secondary system for the exchange of data
-#@param: data_type, a string representing the type of data expected
-#        appropriate types include: "INIT", "FINAL"
+#@param: data_type, a string representing the TYPE of data expected
+#        appropriate TYPE include: "INIT", "FINAL"
 class RemoteSystem:
    def __init__(self, data_type):
       self.data_type = data_type
@@ -43,9 +43,8 @@ class RemoteSystem:
    #        connecting to the specified ip to receive some data from
    #        the server. If there is no server listening on the ip specified
    #        the client waits for some period of time then attempts to reconnect
-   #@param: data_type, the type of data expected from server
    #@param: ip, ip of the listening server
-   def client(self, data_type, ip):
+   def client(self, ip):
       #Create a TCP socket
       sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
       retry = true
@@ -71,7 +70,13 @@ class RemoteSystem:
       sock.close
       #Convert serialized object to dictionary
       self.hash_data = loads(self.data)
-
+      try:
+         if(hash_data['TYPE'] != self.data_type):
+            exit.open("primary and secondary server out of sync, \
+            restart installation")
+      except:
+         exit.open("failed to read remote data configuration\
+         restart installation")
       return self.hash_data
 
 
@@ -86,7 +91,6 @@ class RemoteSystem:
       #Create server and bind to ourselves
       server = SocketServer.TCPServer(("localhost", self.port), MyTCPHandler)
       server.handle_request()
-
 
 #TCP Handler class
 class MyTCPHandler(SocketServer.BaseRequestHandler):

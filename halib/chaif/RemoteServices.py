@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 #
-# Copyright (c) 2009 Okoye Chuka D.<okoye9@gmail.com>        
+# Copyright (c) 2009 Okoye Chuka D.<okoye9@gmail.com>
+#                    Himanshu Chhetri <himanshuchhetri@gmail.com>
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -19,44 +20,76 @@
 
 import os
 import commands
+import socket
+import SocketServer
+from marshal import dumps, loads
 import halib.chaif.DatabaseDriver as ddriver
 import halib.Logger as logger
+import halib.Exit as exit
 
 #Some globals
-conf_path = "/usr/share/haoscar/remote.conf" #Should be stored in ha_db
-execute_prefix = "pywrat_execute -c /usr/share/haoscar/remote.conf "
-def initialize():
-	logger.subsection("generating remote configuration files")
-	value = "#HA-OSCAR auto generated file for remote connection \n"
-	conf = []
-	conf.append(value)
-	value = "[DEFAULT]\n"
-	conf.append(value)
-	#There might be issues with sudo based systems like debian.
-	ip = raw_input("Enter the IP or DNS hostname of remote system: ")
-	#TODO: Check if it is a valid ip
-	conf.append("exec_host = "+ip+"\n")
-	conf.append("store_host = %(exec_host)s \n")
-	conf.append("debug_level = 2\n")
-	conf.append("debug_log = /dev/stdout\n\n[communication]\n")
-	conf.append("pre_exec_cmd =  \npost_exec_cmd = \n")
-	conf.append("ssh_cmd = /usr/bin/ssh\n")
-	#TODO: Setup public, private key for logins
-	conf.append("exec_key = \n")
-	user = raw_input("Admin username on remote host(read warnings for debian systems): ")
-	conf.append("exec_user = "+user+"\n")
-	conf.append("exec_socket = \nssh_opts = -c blowfish -q\npre_store_cmd =\npost_store_cmd = \nscp_cmd = /usr/bin/scp\nstore_key = %(exec_key)s\nstore_user = %(exec_user)s\nstore_socket = \nscp_opts = -c blowfish -C -r -q\nrsync_cmd = /usr/bin/rsync\nrsync_opts = -z -L -t -r -q")
-	FILE = open(conf_path, "w+")
-	for value in conf:
-		FILE.write(value)
-	FILE.close()
-	logger.subsection("finished generating remote configuration files")
+#@des:   The RemoteSystem class is responsible for making connections between
+#        Primary and Secondary system for the exchange of data
+#@param: data_type, a string representing the type of data expected
+#        appropriate types include: "INIT", "FINAL"
+class RemoteSystem:
+   def __init__(self, data_type):
+      self.data_type = data_type
+      self.port = 9011
+      self.data = dumps(dict())
+      self.hash_data = dict()
 
-def execute(command_to_execute):
-	return commands.getoutput(execute_prefix + command_to_execute)
+   #@des:   The client is responsible for deserializing an object and 
+   #        connecting to the specified ip to receive some data from
+   #        the server. If there is no server listening on the ip specified
+   #        the client waits for some period of time then attempts to reconnect
+   #@param: data_type, the type of data expected from server
+   #@param: ip, ip of the listening server
+   def client(self, data_type, ip):
+      #Create a TCP socket
+      sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      retry = true
+      count = 0
+      #Initiate connection
+      while(retry == true):
+         try:
+            retry = false
+            sock.connect(ip, self.port)
+         except socket.error:
+            if(count < 1 ):
+               retry = true
+               count += 1
+               logger.subsection("listening server not ready. retrying in 2\
+               mins...")
+         except socket.timeout:
+            exit.open("could not connect to remote server")
+         except:
+            exit.open("a major connection error has occured. check your \
+            address and retry installation.")
+      #Receive data from server
+      self.data = sock.recv(self.port)
+      sock.close
+      #Convert serialized object to dictionary
+      self.hash_data = loads(self.data)
 
-#@des:	Receives a path to a script that is to be executed on remote system
-#			It uploads the script, then executes it, returns the output of the 
-#			script.
-def sExecute(path):	
-	print "To be implemented"
+      return self.hash_data
+
+
+   #@des:   The server is responsible for listening for connections from a 
+   #        client and sending data. In the event of 
+   #        an error, it resends then quits
+   #@param: hash_data, data packet to be sent
+   def server(self, hash_data):
+      #Some globals
+      #We serialize the data to be sent
+      self.data = dumps(hash_data)
+      #Create server and bind to ourselves
+      server = SocketServer.TCPServer(("localhost", self.port), MyTCPHandler)
+      server.handle_request()
+
+
+#TCP Handler class
+class MyTCPHandler(SocketServer.BaseRequestHandler):
+   def handle(self):
+      self.request.send()
+

@@ -116,7 +116,7 @@ class DbDriver:
     return result
 
    
-  # Insert given list into given table of database
+  # Insert given hash into given table of database
   def insert_db(self, table, get_dict):
     if not path.exists(self.db_path):
       logger.subsection("Cannot access database")

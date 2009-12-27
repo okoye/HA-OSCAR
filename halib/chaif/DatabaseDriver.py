@@ -82,6 +82,7 @@ class DbDriver:
 
 
 # Returns table in the form of a dictionary
+# TODO : Fix select_db bug
   def select_db(self, table):
     if not path.exists(self.db_path):
       logger.subsection("Cannot access database file at "+ self.db_path)
@@ -106,11 +107,9 @@ class DbDriver:
     try:
       c.execute(query)
     except:
-      '''
       logger.subsection("Invalid SQL syntax")
       logger.subsection("Query was :") 
       logger.subsection(query)
-      '''
       exit(2)
 
     r = c.fetchone()
@@ -144,12 +143,13 @@ class DbDriver:
     #Modified: December 25, 2009 by Chuka Okoye
     #Set up the string for insertion
     #TODO: Include an input sanitization method to 'silence' special chars
-    query = "INSERT INTO "+table+" ("
+    #query = "INSERT INTO "+table+" ("
+    query = "INSERT INTO "+table
     for key in get_dict.keys(): #Possible error source if keys
        query += key              #are retrieved differently each time.
        query += ","
     query = query.rstrip(',')
-    query += ") VALUES ("
+    query += " VALUES ("
     for key in get_dict.keys():
       query += "'"
       query += get_dict[key]
@@ -165,6 +165,7 @@ class DbDriver:
       logger.subsection("Query was :") 
       logger.subsection(query)
       exit(2)
+      print query
     conn.commit()
     c.close()
 

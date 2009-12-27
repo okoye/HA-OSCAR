@@ -65,7 +65,7 @@ class RemoteSystem(SocketServer.BaseRequestHandler):
          except:
             exit.open("a major connection error has occured. check your address and retry installation.")
       #Receive data from server
-      self.data = sock.recv(4096)
+      self.data = sock.recv(self.port)
       sock.close
       #Convert serialized object to dictionary
       self.hash_data = loads(self.data)

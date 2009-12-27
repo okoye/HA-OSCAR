@@ -140,16 +140,12 @@ class DbDriver:
     conn = sqlite3.connect(self.db_path)
     c = conn.cursor()
     
-    #Modified: December 25, 2009 by Chuka Okoye
-    #Set up the string for insertion
-    #TODO: Include an input sanitization method to 'silence' special chars
-    #query = "INSERT INTO "+table+" ("
-    query = "INSERT INTO "+table
-    for key in get_dict.keys(): #Possible error source if keys
-       query += key              #are retrieved differently each time.
+    query = "INSERT INTO "+table+" ("
+    for key in get_dict.keys():
+       query += key            
        query += ","
     query = query.rstrip(',')
-    query += " VALUES ("
+    query += ") VALUES ("
     for key in get_dict.keys():
       query += "'"
       query += get_dict[key]
@@ -165,43 +161,5 @@ class DbDriver:
       logger.subsection("Query was :") 
       logger.subsection(query)
       exit(2)
-      print query
     conn.commit()
     c.close()
-
-  # Update given table with new dictionary key-value pair
-  def update_db(self, table, get_dict):
-    if not path.exists(self.db_path):
-      logger.subsection("Cannot access database")
-      exit(2)
-
-    if type(get_dict) != dict:
-      logger.subsection(get_dict+ " must be of type Dictionary")
-      exit(2)
-
-    k = get_dict.keys()[0]
-    v = get_dict.values()[0]
-
-    if type(k)!=str or type(v)!=str:
-      logger.subsection("Dictionary key and value must be of type String")
-      exit(2)
-
-    existing_tables = []
-    existing_tables = self.get_tables()
-    if table not in existing_tables:
-      logger.subsection(table+ " does not exist in database")
-      exit(2)
-
-    conn = sqlite3.connect(self.db_path)
-    c = conn.cursor()
-    query = "UPDATE '%s' SET value = '%s' WHERE name = '%s'" % (table, v, k)
-    try:
-      c.execute(query)
-    except:
-      logger.subsection("Invalid SQL syntax")
-      logger.subsection("Query was :")
-      logger.subsection(query)
-      exit(2)
-    conn.commit()
-    c.close()
-

@@ -46,7 +46,7 @@ class RemoteSystem:
    #@param: ip, ip of the listening server
    def client(self, ip):
       #Create a TCP socket
-      sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      sock = socket.socket()
       retry = True
       count = 0
       #Initiate connection
@@ -55,7 +55,7 @@ class RemoteSystem:
             retry = False
             sock.connect((ip,self.port))
          except socket.error:
-            if(count < 1 ):
+            if(count < 5 ):
                retry = True
                count += 1
                logger.subsection("listening server not ready. retrying in 2 mins...")
@@ -86,17 +86,17 @@ class RemoteSystem:
       #We serialize the data to be sent
       self.data = dumps(hash_data)
       #Create server and bind to ourselves
-      #server = SocketServer.TCPServer(("localhost", self.port), MyTCPHandler)
-      sock = socket.socket()
-      host = socket.gethostname()
-      port = self.port
-      sock.bind((host, port))
-      sock.listen(5)
-      client, addr = sock.accept()
-      logger.subsection("client connected from address "+addr)
-      client.send(self.data)
-      c.close()
-      #server.handle_request()
+      server = SocketServer.TCPServer(("localhost", self.port), MyTCPHandler)
+#      sock = socket.socket()
+#      host = socket.gethostname()
+#      port = self.port
+#      sock.bind((host, port))
+#      sock.listen(5)
+#      client, addr = sock.accept()
+#      logger.subsection("client connected from address "+addr)
+#      client.send(self.data)
+#      client.close()
+      server.handle_request()
 
 #TCP Handler class
 class MyTCPHandler(SocketServer.BaseRequestHandler):

@@ -32,7 +32,7 @@ import halib.Exit as exit
 #        Primary and Secondary system for the exchange of data
 #@param: data_type, a string representing the TYPE of data expected
 #        appropriate TYPE include: "INIT", "FINAL"
-class RemoteSystem:
+class RemoteSystem(SocketServer.BaseRequestHandler):
    def __init__(self, data_type):
       self.data_type = data_type
       self.port = 9011
@@ -86,15 +86,10 @@ class RemoteSystem:
       #We serialize the data to be sent
       self.data = dumps(hash_data)
       #Create server and bind to ourselves
-      server = SocketServer.TCPServer(("localhost", self.port), MyTCPHandler)
-      logger.subsection("client connected")
-      server.timeout(120)
+      server = SocketServer.TCPServer(("localhost", self.port), RemoteSystem)
       server.handle_request()
       logger.subsection("closing open port: "+self.port)
-      server.shutdown()
 
-#TCP Handler class
-class MyTCPHandler(SocketServer.BaseRequestHandler):
    def handle(self):
-      self.request.send()
+      self.request.send(self.data)
 

@@ -46,7 +46,7 @@ class RemoteSystem(SocketServer.BaseRequestHandler):
    #@param: ip, ip of the listening server
    def client(self, ip):
       #Create a TCP socket
-      sock = socket.socket()
+      sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
       retry = True
       count = 0
       #Initiate connection
@@ -65,7 +65,7 @@ class RemoteSystem(SocketServer.BaseRequestHandler):
          except:
             exit.open("a major connection error has occured. check your address and retry installation.")
       #Receive data from server
-      self.data = sock.recv(self.port)
+      self.data = sock.recv(4096)
       sock.close
       #Convert serialized object to dictionary
       self.hash_data = loads(self.data)
@@ -81,6 +81,7 @@ class RemoteSystem(SocketServer.BaseRequestHandler):
    #        client and sending data. In the event of 
    #        an error, it resends then quits
    #@param: hash_data, data packet to be sent
+
    def server(self, hash_data):
       hash_data['TYPE'] = self.data_type #Control flag
       #We serialize the data to be sent

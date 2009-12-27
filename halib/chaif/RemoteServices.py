@@ -87,16 +87,11 @@ class RemoteSystem:
       self.data = dumps(hash_data)
       #Create server and bind to ourselves
       server = SocketServer.TCPServer(("localhost", self.port), MyTCPHandler)
-#      sock = socket.socket()
-#      host = socket.gethostname()
-#      port = self.port
-#      sock.bind((host, port))
-#      sock.listen(5)
-#      client, addr = sock.accept()
-#      logger.subsection("client connected from address "+addr)
-#      client.send(self.data)
-#      client.close()
+      logger.subsection("client connected")
+      server.timeout(120)
       server.handle_request()
+      logger.subsection("closing open port: "+self.port)
+      server.shutdown()
 
 #TCP Handler class
 class MyTCPHandler(SocketServer.BaseRequestHandler):

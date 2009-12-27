@@ -19,12 +19,20 @@
 
 import os
 import imp
+import md5
 import commands
 import halib.Logger as logger
+import halib.chaif.DatabaseDriver as ddriver
+import halib.Exit as exit
+directory = "/usr/share/haoscar/Gather/"
 
+#@desc: Reloads all the gathering modules from their
+#       designated directory
 def reset():
+   #Some globals
+   dict_config = dict()
+   database_driver = ddriver.DbDriver()
    #First, we attempt to get all Gathering modules in our directory
-   directory = "/usr/share/haoscar/Gather/"
    if(not os.path.exists(directory)):
       logger.subsection("could not find any modules in our gather directory")
       return False
@@ -36,19 +44,30 @@ def reset():
 
    #Now, get information for each module in the directory
    for file in files:
-      module, ext = os.path.splitext(file)
+      module = __load_module(file)
       try:
-         fin = open(directory+file,'rb')
-         fname = imp.load_source(module,directory+file,fin)
-         fname.open
-         logger.subsection("adding module "+module)
+         dict_config = module.open()
+         dict_config["FULL_PATH"] = directory+file
+         dict_config["STATE"] = "1"
+         database_driver.insert_db("Gather_Modules", dict_config)
       except:
-         logger.subsection("failed to load "+module)
-         
-   
+         logger.subsection("module "+file+" could not be loaded")
    return True
+
+#@desc: Retrieves all the modules whose state is
+#       set to a non zero number
 def getActiveModules():
-     pass
+   #Some globals
+   dict_config = dict()
+   database_driver = ddriver.DbDriver()
+   
+   #First, retrieve all modules in gather db
+   try:
+      dict_config = database_driver.select_db("Gather_Modules")
+   except:
+      exit.open("fatal error, failed to load gather modules!")
+
+   print dict_config
 
 def getAllModules():
       pass
@@ -58,3 +77,23 @@ def removeModules():
 
 def addModules():
       pass
+
+def __load_module(module):
+   code_path = directory + module
+   try:
+      try:
+         code_dir = os.path.dirname(code_path)
+         code_file = os.path.basename(code_path)
+
+         fin = open(code_path, 'rb')
+
+         return imp.load_source(md5.new(code_path).hexdigest(), code_path, fin)
+      finally:
+         try: 
+            fin.close()
+         except: 
+            pass
+   except ImportError, x:
+      logger.subsection("failed to import "+module)
+   except:
+      logger.subsection("an unknown import module error has occured.")

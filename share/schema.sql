@@ -35,3 +35,10 @@ CREATE TABLE General_Configuration(
       DATA_DIR blob,
       DATA_SYNC text
 );
+CREATE TABLE Gather_Modules(
+      COMPONENT text,
+      NAME text,
+      DESCRIPTION text,
+      FULL_PATH text,
+      STATE text
+);

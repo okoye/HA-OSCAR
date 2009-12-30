@@ -97,7 +97,6 @@ def main():
       #TODO: Add error checking to ip input otherwise a crash will occur
       remote_config = remote.client(input)
       print "DEBUG: Remote Config is: ",remote_config
-      exit.open("Great test!")
    elif mode == "secondary":
       database_driver.insert_db('Secondary_Configuration', temp)
       logger.subsection("sucessfully populated data for secondary server")
@@ -105,7 +104,7 @@ def main():
 
       #Setup details for remote connection
       remote = RemoteServices.RemoteSystem("INIT")
-      remote.server(temp)
+      remote.server(temp, temp["IP_ADDR"])
    else:
       logger.subsection("an error has occured, installation cannot continue")
       exit.open("unknown installation mode.")

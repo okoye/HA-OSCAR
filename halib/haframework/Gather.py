@@ -50,6 +50,7 @@ def reset():
          dict_config["FULL_PATH"] = directory+file
          dict_config["STATE"] = "1"
          database_driver.insert_db("Gather_Modules", dict_config)
+         logger.subsection("loaded module: "+file)
       except:
          logger.subsection("module "+file+" could not be loaded")
    return True
@@ -64,6 +65,7 @@ def getActiveModules():
    #First, retrieve all modules in gather db
    try:
       dict_config = database_driver.select_db("Gather_Modules")
+      #For statement
    except:
       #exit.open("fatal error, failed to load gather modules!")
       pass

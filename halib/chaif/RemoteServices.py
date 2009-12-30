@@ -1,6 +1,10 @@
 #! /usr/bin/env python
 #
+<<<<<<< HEAD
 # Copyright (c) 2009 Okoye Chuka D.<okoye9@gmail.com>
+=======
+# Copyright (c) 2009 Himanshu Chhetri <himanshuchhetri@gmail.com>
+>>>>>>> himanshu-database/master
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -17,16 +21,13 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import os
-import commands
 import socket
 import SocketServer
 import time
 from marshal import dumps, loads
-import halib.chaif.DatabaseDriver as ddriver
-import halib.Logger as logger
-import halib.Exit as exit
+import time
 
+<<<<<<< HEAD
 #Some globals
 #@des:   The RemoteSystem class is responsible for making connections between
 #        Primary and Secondary system for the exchange of data
@@ -75,8 +76,26 @@ class RemoteSystem(SocketServer.BaseRequestHandler):
       except:
          exit.open("failed to read remote data configuration restart installation")
       return self.hash_data
+=======
+# Serialized object representation of dictionary
+DICT = dumps(dict())
 
+# Python's TCP Handler class
+class MyTCPHandler(SocketServer.BaseRequestHandler):
+  def handle(self):
+    # Log client IP address
+    # logger.subsection("client connected from address %s") % self.client_address[0]
+    # Send serialized dictionary object to client
+    self.request.send(DICT)
+>>>>>>> himanshu-database/master
 
+class RemoteServices:
+  def __init__(self, host="localhost", port=9999):
+    self.HOST = host
+    self.PORT = port
+    self.RESULT = {}
+
+<<<<<<< HEAD
    #@des:   The server is responsible for listening for connections from a 
    #        client and sending data. In the event of 
    #        an error, it resends then quits
@@ -93,4 +112,42 @@ class RemoteSystem(SocketServer.BaseRequestHandler):
 
    def handle(self):
       self.request.send(self.data)
+=======
+  # Accepts a dictionary to be sent
+  def server(self, get_dict):
+    global DICT
+    DICT = dumps(get_dict)
+    # Create the server, binding to given host and port
+    server = SocketServer.TCPServer((self.HOST, self.PORT), MyTCPHandler)
+    # Activate the server and handle a single request from the client
+    server.handle_request()
+>>>>>>> himanshu-database/master
 
+  # Returns dictionary received from Server
+  def client(self):
+    '''
+    reconnect_attempts = 5 
+    while (reconnect_attempts > 0):
+      try:
+        # Attempt connection
+        sock.connect((self.HOST, self.PORT))
+      except socket.error:
+        reconnect_attempts -= 1
+        #logger.subsection("listening server not ready. retrying in 2 mins...")
+        time.sleep(120)
+      except socket.timeout:
+        exit.open("Could not connect to remote server")
+      except:
+        exit.open("A major connection error has occured. check your address and retry installation.")
+    '''
+    # Create a TCP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Attempt connection
+    sock.connect((self.HOST, self.PORT))
+    # Receive serialized dictionary object from the server
+    serial_dict = sock.recv(self.PORT)
+    # Close socket
+    sock.close()
+    # Convert serialized object to dictionary
+    self.RESULT= loads(serial_dict)
+    return self.RESULT

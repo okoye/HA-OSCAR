@@ -19,7 +19,7 @@
 
 import os
 import imp
-import md5
+import hashlib
 import commands
 import halib.Logger as logger
 import halib.chaif.DatabaseDriver as ddriver
@@ -65,9 +65,11 @@ def getActiveModules():
    try:
       dict_config = database_driver.select_db("Gather_Modules")
    except:
-      exit.open("fatal error, failed to load gather modules!")
+      #exit.open("fatal error, failed to load gather modules!")
+      pass
 
    print dict_config
+   return dict_config
 
 def getAllModules():
       pass
@@ -87,7 +89,7 @@ def __load_module(module):
 
          fin = open(code_path, 'rb')
 
-         return imp.load_source(md5.new(code_path).hexdigest(), code_path, fin)
+         return imp.load_source(hashlib.md5(code_path).hexdigest(), code_path, fin)
       finally:
          try: 
             fin.close()

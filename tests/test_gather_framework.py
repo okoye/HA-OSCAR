@@ -27,10 +27,10 @@ import commands
 
 class TestGatherFunctions(unittest.TestCase):
    def setUp(self):
-      commands.getouptut("mkdir -p /usr/share/haoscar/Gather")
+      commands.getoutput("mkdir -p /usr/share/haoscar/Gather")
       string = "cp /home/okoye/test_module_1.py /usr/share/haoscar/Gather/"
       commands.getoutput(string)
-      commands.getouput("touch /usr/share/haoscar/Gather/test_module_0.py")
+      commands.getoutput("touch /usr/share/haoscar/Gather/test_module_0.py")
       pass
 
 
@@ -42,13 +42,14 @@ class TestGatherFunctions(unittest.TestCase):
    #Fails if test_module_0.py is included in the active modules
    #Fails if test_module_1.py(Ganglia_Monitor_Test) is not in the active modules
    def test_getActiveModules(self):
+      gather.reset()
       x = gather.getActiveModules()
       self.failIf("test_module_0.py" in x.keys())
       self.failIf("test_module_0.py" in x.values())
       self.assert_("Ganglia_Monitor_Test" in x.keys())
 
    def tearDown(self):
-      commands.getouput("rm /usr/share/haoscar/Gather/test_module_0.py")
+      commands.getoutput("rm /usr/share/haoscar/Gather/test_module_0.py")
       commands.getoutput("rm /usr/share/hoscar/Gather/test_module_1.py")
       pass
 

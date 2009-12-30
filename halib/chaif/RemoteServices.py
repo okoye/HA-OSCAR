@@ -90,7 +90,7 @@ class RemoteSystem(SocketServer.BaseRequestHandler):
       #Create server and bind to ourselves
       server = SocketServer.TCPServer((ip, self.port), RemoteSystem)
       server.handle_request()
-      logger.subsection("closing open port: "+self.port)
+      logger.subsection("connection closed")
  
    def handle(self):
       self.request.send(self.data)

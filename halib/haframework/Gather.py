@@ -25,6 +25,7 @@ import halib.Logger as logger
 import halib.chaif.DatabaseDriver as ddriver
 import halib.Exit as exit
 directory = "/usr/share/haoscar/Gather/"
+gather_table = "Gather_Modules"
 
 #@desc: Reloads all the gathering modules from their
 #       designated directory
@@ -32,6 +33,7 @@ def reset():
    #Some globals
    dict_config = dict()
    database_driver = ddriver.DbDriver()
+
    #First, we attempt to get all Gathering modules in our directory
    if(not os.path.exists(directory)):
       logger.subsection("could not find any modules in our gather directory")
@@ -39,9 +41,11 @@ def reset():
 
    #Remove all .pyc and .pyo files
    commands.getoutput("rm "+directory+ "*.pyc")
-
    files = os.listdir(directory)
 
+   #Clear all previous entries in database
+   database_driver.truncate_db(gather_table)
+   
    #Now, get information for each module in the directory
    for file in files:
       module = __load_module(file)
@@ -76,10 +80,10 @@ def getActiveModules():
 def getAllModules():
       pass
 
-def removeModules():
+def removeActiveModules():
       pass
 
-def addModules():
+def addActiveModule():
       pass
 
 def __load_module(module):

@@ -36,6 +36,7 @@ CREATE TABLE General_Configuration(
       DATA_SYNC text
 );
 CREATE TABLE Gather_Modules(
+      id integer primary key not null,
       COMPONENT text,
       NAME text,
       DESCRIPTION text,

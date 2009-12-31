@@ -88,8 +88,17 @@ class RemoteSystem(SocketServer.BaseRequestHandler):
       #We serialize the data to be sent
       self.data = dumps(hash_data)
       #Create server and bind to ourselves
-      server = SocketServer.TCPServer((ip, self.port), RemoteSystem)
-      server.handle_request()
+      try:
+         server = SocketServer.TCPServer((ip, self.port), RemoteSystem)
+         server.handle_request()
+      except socket.error, err:
+         exit.open("address already in use!")
+      except:
+         exit.open("some un-anticipated error occured!")
+      finally:
+         try:
+            server.socket.close()
+         except: pass
       logger.subsection("connection closed")
  
    def handle(self):

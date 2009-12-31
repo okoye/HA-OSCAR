@@ -109,6 +109,7 @@ class DbDriver:
       logger.subsection(query)
       exit(2)
 
+    '''
     result = {}
     r = c.fetchone()
     n = 0
@@ -116,6 +117,22 @@ class DbDriver:
       result[key] = r[n]
       n += 1
     return result
+    '''
+    rows = c.fetchall()
+    c.execute(query)
+    row = c.fetchone()
+    keyz = row.keys()
+
+    result = []
+    for i in range(len(rows)):
+      each_dict = {}
+      n = 0
+      for key in keyz:
+        each_dict[key] = rows[i][n]
+        n += 1
+      result.append(each_dict)
+
+   return result
    
   # Insert given list into given table of database
   def insert_db(self, table, get_dict):
@@ -155,3 +172,30 @@ class DbDriver:
       exit(2)
     conn.commit()
     c.close()
+
+# Truncate contents of table
+  def truncate_db(self, table):
+    if not path.exists(self.db_path):
+      logger.subsection("Cannot access database")
+      exit(2)
+
+    existing_tables = []
+    existing_tables = self.get_tables()
+    if table not in existing_tables:
+      logger.subsection(table+ " does not exist in database")
+      exit(2)
+
+    conn = sqlite3.connect(self.db_path)
+    c = conn.cursor()
+    
+    query = "delete from " + table
+    try:
+       c.execute(query)
+    except:
+      logger.subsection("Invalid SQL syntax")
+      logger.subsection("Query was :") 
+      logger.subsection(query)
+      exit(2)
+    conn.commit()
+    c.close()
+

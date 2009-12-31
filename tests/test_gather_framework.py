@@ -57,7 +57,7 @@ class TestGatherFunctions(unittest.TestCase):
       active_modules = database_driver.select_db("Active_Modules")
 
       for index in xrange(len(active_modules)):
-         self.failIf(active_modules[index]["Name"] is "Ganglia_Monitor_Test")
+         self.failIf(active_modules[index]["NAME"] is "Ganglia_Monitor_Test")
       self.assert_(x == True)
             
 

@@ -22,6 +22,7 @@
 import sys
 sys.path.append("../")
 import halib.haframework.Gather as gather
+import halib.chaif.DatabaseDriver as ddriver
 import unittest
 import commands
 
@@ -31,22 +32,33 @@ class TestGatherFunctions(unittest.TestCase):
       string = "cp /home/okoye/test_module_1.py /usr/share/haoscar/Gather/"
       commands.getoutput(string)
       commands.getoutput("touch /usr/share/haoscar/Gather/test_module_0.py")
-      pass
-
-
-   #Test the reset function. Fails if any value other than True is returned
+      
    def test_reset(self):
       x = gather.reset()
       self.failIf(x is False)
 
-   #Fails if test_module_0.py is included in the active modules
-   #Fails if test_module_1.py(Ganglia_Monitor_Test) is not in the active modules
    def test_getActiveModules(self):
-      gather.reset()
+      x = None
       x = gather.getActiveModules()
-      self.failIf("test_module_0.py" in x.keys())
-      self.failIf("test_module_0.py" in x.values())
-      self.assert_("Ganglia_Monitor_Test" in x.keys())
+      self.failIf("test_module_0.py" in x)
+      self.assert_(x != None )
+
+   def test_getAllModules(self):
+      x = None
+      x = gather.getAllModules()
+      self.failIf(x == None)
+
+   def test_removeActiveModules(self):
+      database_driver = ddriver.DbDriver()
+      active_modules = []
+
+      gather.removeActiveModules(["Ganglia_Monitor_Test"])
+
+      active_modules = database_driver.select_db("Active_Modules")
+
+      for index in xrange(len(active_modules)):
+         self.failIf(active_modules[index]["Name"] is "Ganglia_Monitor_Test"):
+            
 
    def tearDown(self):
       commands.getoutput("rm /usr/share/haoscar/Gather/test_module_0.py")

@@ -26,6 +26,7 @@ import halib.chaif.DatabaseDriver as ddriver
 import halib.Exit as exit
 directory = "/usr/share/haoscar/Gather/"
 gather_table = "Gather_Modules"
+gather_active_table = "Active_Modules"
 
 #@desc: Reloads all the gathering modules from their
 #       designated directory
@@ -63,25 +64,62 @@ def reset():
 #       set to a non zero number
 def getActiveModules():
    #Some globals
-   config = []
+   all_modules = []
+   active_modules = []
+   temp_module = dict()
    database_driver = ddriver.DbDriver()
    
-   #First, retrieve all modules in gather db
+   #retreive all modules and check if state is 1 or 0
    try:
-      config = database_driver.select_db("Gather_Modules")
-      #For statement
+      all_modules = database_driver.select_db("Gather_Modules")
+      try:
+         for index in xrange(len(all_modules)):
+            temp_module = all_modules[index]
+            if (temp_module["STATE"] != "0"):
+               active_modules.append(temp_module)
+      except:
+         logger.subsection("an error occured when processing module state")
    except:
-      #exit.open("fatal error, failed to load gather modules!")
-      pass
+      exit.open("fatal error, failed to load gather modules!")
+   
+   return active_modules
 
-   print config
-   return config
-
+#@desc: Returns all gathering modules currently available
+#       in the gather directory and their full config
 def getAllModules():
-      pass
+   #Globals:
+   all_modules = []
+   database_driver = ddriver.DbDriver()
 
-def removeActiveModules():
-      pass
+   try:
+      all_modules = database_driver.select_db("Gather_Modules")
+   except:
+      logger.subsection("failed to retrieve modules")
+   return all_modules
+
+#@desc:  Resets a module from active to inactive.
+#        If module was previously inactive, it does nothing
+#        Also, it ensures the module exists others exits with an error
+#
+#@param: Requires an array of module name
+#@return:Returns True if successful
+def removeActiveModules(module_names):
+   #Globals:
+   temp_module = dict()
+   all_modules = []
+   active_modules = []
+   database_driver = ddriver.DbDriver()
+   
+   #Clear table first
+   database_driver.truncate_db(gather_active_table)
+
+   all_modules = getAllModules()
+
+   #Regenerate active table
+   for index in xrange(len(all_modules)):
+      if(all_modules[index]["NAME"] not in module_names):
+         database_driver.insert_db(gather_active_table, all_modules[index])
+   return True
 
 def addActiveModule():
       pass

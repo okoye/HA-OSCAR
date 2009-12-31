@@ -43,3 +43,11 @@ CREATE TABLE Gather_Modules(
       FULL_PATH text,
       STATE text
 );
+CREATE TABLE Active_Modules(
+      id integer primary key not null,
+      COMPONENT text,
+      NAME text,
+      DESCRIPTION text,
+      FULL_PATH text,
+      STATE text
+);

@@ -52,12 +52,13 @@ class TestGatherFunctions(unittest.TestCase):
       database_driver = ddriver.DbDriver()
       active_modules = []
 
-      gather.removeActiveModules(["Ganglia_Monitor_Test"])
+      x = gather.removeActiveModules(["Ganglia_Monitor_Test"])
 
       active_modules = database_driver.select_db("Active_Modules")
 
       for index in xrange(len(active_modules)):
-         self.failIf(active_modules[index]["Name"] is "Ganglia_Monitor_Test"):
+         self.failIf(active_modules[index]["Name"] is "Ganglia_Monitor_Test")
+      self.assert_(x == True)
             
 
    def tearDown(self):

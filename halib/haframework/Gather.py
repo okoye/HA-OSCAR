@@ -54,7 +54,8 @@ def reset():
          dict_config = module.open()
          dict_config["FULL_PATH"] = directory+file
          dict_config["STATE"] = "1"
-         database_driver.insert_db("Gather_Modules", dict_config)
+         database_driver.insert_db(gather_table, dict_config)
+         database_driver.insert_db(gather_active_table, dict_config)
          logger.subsection("loaded module: "+file)
       except:
          logger.subsection("module "+file+" could not be loaded")

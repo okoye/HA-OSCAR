@@ -59,19 +59,19 @@ def reset():
 #       set to a non zero number
 def getActiveModules():
    #Some globals
-   dict_config = dict()
+   config = []
    database_driver = ddriver.DbDriver()
    
    #First, retrieve all modules in gather db
    try:
-      dict_config = database_driver.select_db("Gather_Modules")
+      config = database_driver.select_db("Gather_Modules")
       #For statement
    except:
       #exit.open("fatal error, failed to load gather modules!")
       pass
 
-   print dict_config
-   return dict_config
+   print config
+   return config
 
 def getAllModules():
       pass

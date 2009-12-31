@@ -97,6 +97,7 @@ class DbDriver:
       logger.subsection(table + " must of type String")
       exit(2)
 
+    conn = sqlite3.connect(self.db_path)
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
     query = "select * from " + table
@@ -109,15 +110,6 @@ class DbDriver:
       logger.subsection(query)
       exit(2)
 
-    '''
-    result = {}
-    r = c.fetchone()
-    n = 0
-    for key in r.keys():
-      result[key] = r[n]
-      n += 1
-    return result
-    '''
     rows = c.fetchall()
     c.execute(query)
     row = c.fetchone()
@@ -132,7 +124,7 @@ class DbDriver:
         n += 1
       result.append(each_dict)
 
-   return result
+    return result
    
   # Insert given list into given table of database
   def insert_db(self, table, get_dict):

@@ -16,7 +16,6 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-'''
 import sys
 import commands
 import halib.Logger as logger
@@ -24,7 +23,7 @@ import halib.chaif.DatabaseDriver as database_drive
 from os import path
 from os import system
 import halib.Exit as exit
-'''
+
 init_comment = """\n#HA-OSCAR auto generated monit configuration"""
 
 

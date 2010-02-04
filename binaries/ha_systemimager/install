@@ -1,0 +1,543 @@
+#!/usr/bin/perl -w
+#
+#  An alternate SIS installer.  installer.pl is the original.
+#
+#  $Id: install 13 2007-10-04 21:00:11Z arighi $
+#
+#
+#  Based on installer.pl, which was created by Sean Dague, and contributed to
+#  by Michael Chase-Salerno, Dann Frazier, and Brian Finley.
+#
+#  2003.12.08  Brian Elliott Finley
+#   - Specify specific packages to install, rather than classes of install.
+#     The variation of install combinations we now have caused me to try
+#     this new method of install for this script.
+#  2004.01.31  Brian Elliott Finley
+#   - Added dependency checking
+#   - Auto-add dependencies if in package list
+#   - Check integrity of each existing rpm before deciding not to download
+#  2004.06.29  Brian Elliott Finley
+#   - if --list and --download-only, just --list
+#  2005.12.21  Paul Greidanus
+#   - allow user to choose a specific sf mirror
+#  2005.12.22  Paul Greidanus
+#   - added --mirror-list, and move --sfsite to --mirror
+#  2005.12.22  Brian Elliott Finley
+#   - verbiage tweak
+#
+#  Run "./install --help" for description.
+#
+################################################################################
+#
+# TODO
+# - upon rpm install failure, spit out bit about TK XML-simple and other rpms
+# - use local list file if it exists.
+#
+
+use Cwd; 
+use Carp;
+use Data::Dumper;
+use strict;
+use File::Copy;
+use File::Path;
+use File::Spec;
+use Getopt::Long;
+use POSIX qw(uname);
+
+# Tags allow for an arbitrary slice of software.  I'm fully qualifying
+# the url here so that we can have tags point to somewhere else
+# for people to maintain.
+#
+# New tag policy: anyone who wants a tag, and asks nicely, gets one.
+
+my %packagelist_urls = (
+    # stable is what we consider latest stable code
+    stable => 'http://download.systemimager.org/pub/sis-install/tags/stable.list',
+
+    # devel is for development-release available packages
+    devel => 'http://download.systemimager.org/pub/sis-install/tags/devel.list',
+
+    # CSM is for the Cluster Systems Management group at IBM
+    # ping salernom@us.ibm.com or sldague@us.ibm.com for any
+    # other info about it.
+    "CSM" => 'http://download.systemimager.org/pub/sis-install/tags/CSM.list',
+
+    # add other tag urls here... please put in a description of who uses it,
+    # and how to contact them.
+);
+            
+our %opt;
+$opt{directory} = "/tmp/sis-packages";
+
+GetOptions (
+    "help"              => \my $help,
+    "verbose|v"         => \$opt{verbose},
+    "vverbose|vv"       => \$opt{vverbose},
+    "list"              => \my $list,
+    "tag=s"             => \my $tag,
+    "package-list=s"    => \$opt{package_list},
+    "download-only"     => \$opt{download_only},
+    "directory=s"       => \$opt{directory},
+    "mirror=s"          => \$opt{mirror},
+    "mirror-list"	=> \my $mirrorlist,
+) or usage(1);
+
+################################################################################
+#
+# option validation
+#
+# Show help
+if($help) {
+    usage(0);
+}
+
+if($opt{vverbose}){
+        $opt{verbose} = 1;
+}
+
+# tag to use
+if($tag) {
+        if(!$packagelist_urls{$tag}) {
+                print qq(Unknown tag: "$tag"\n);
+                usage(1);
+        }
+} else {
+        # default
+        $tag = "stable";
+}
+
+unless(($list) or ($opt{download_only}) or ($ARGV[0]) or $mirrorlist) {
+        usage(1);
+}
+
+if ($mirrorlist) {
+	&list_mirrors;
+	exit(0);
+}
+
+# create download dir if it doesn't exist
+if(!-d $opt{directory}) { mkdir $opt{directory}, 0775; }
+
+# copy installer to download directory
+unless( (-e "$opt{directory}/install") && ((stat("$0"))[1] == (stat("$opt{directory}/install"))[1]) ) {
+        copy($0, "$opt{directory}/install") or croak("Couldn't copy $0 to $opt{directory}");
+        chmod 0755, "$opt{directory}/install";
+}
+
+# if specified
+if($opt{package_list}) {
+        # Deal with relative paths like "./" and such
+        $opt{package_list} = File::Spec->rel2abs($opt{package_list}, cwd());
+
+        if(! -e "$opt{package_list}") {
+                carp("File name $opt{package_list} doesn't exist.\n");
+                usage(1);
+        }
+} else {
+        # use default
+        $opt{package_list} = "$opt{directory}/${tag}.list";
+
+        # use local if it exists, download if necessary
+        if(! -e "$opt{package_list}") {
+                download_file($packagelist_urls{$tag});
+        } else {
+                print "Using pre-existing package list: $opt{package_list}\n";
+        }
+}
+
+if($list) {
+        &list_packages;
+        exit 0;
+}
+
+# Attempt to auto-detect the type of packages supported by the distribution.
+chomp(my $package_type = `type -p dpkg || type -p rpm`);
+if ($package_type =~ /dpkg/) {
+        print "DEB-based distribution detected\n" if ($opt{verbose});
+        $package_type = 'deb';
+} elsif ($package_type =~ /rpm/) {
+        print "RPM-based distribution detected\n" if ($opt{verbose});
+        $package_type = 'rpm';
+} else {
+        print "ERROR: Unable to detect supported package type (trying with RPM)\n";
+        $package_type = 'rpm';
+}
+
+if($opt{download_only} && !$ARGV[0]) {
+        print "ERROR: Must specify one or more packages with --download-only.\n";
+        print "       Try --list to see available packages.\n\n";
+        usage(1);
+}
+
+if($opt{download_only}) {
+        &download_packages;
+} else {
+        &install_packages;
+}
+
+parting_message() if($opt{verbose});
+
+exit(0);
+
+
+################################################################################
+#
+# sub routines follow
+#
+
+#
+# Usage: if( rpm_has_integrity($rpm) ) { ...; }
+#
+sub rpm_has_integrity
+{
+        my $rpm = shift;
+
+        if($opt{verbose}) {
+                print "Checking integrity of ";
+        }
+
+        my $cmd = "rpm --checksig $rpm";
+        unless($opt{verbose}) { $cmd .= " 1>/dev/null 2>/dev/null"; }
+        !system($cmd) 
+                or return undef;  # rpm failed test
+        return 1;                 # rpm passed
+}
+
+#
+# usage: download_file($url)
+#
+sub download_file
+{
+        my $url = shift;
+
+        my $wget_opts = "--timestamping --directory-prefix=$opt{directory}";
+        unless($opt{vverbose}) {
+                $wget_opts .= " --quiet";
+        }
+        
+        if ($opt{mirror} && $url =~ m/install.sisuite.org/) {
+                $url =~ s^http://install.sisuite.org/sourceforge^^;
+                $url = "http://$opt{mirror}.dl.sourceforge.net/sourceforge" . $url;
+        }
+        my $cmd = "wget $wget_opts $url";
+
+        print "Downloading: $url..." if($opt{verbose});
+        print "\n$cmd\n"              if($opt{vverbose});
+        !system($cmd) or croak("$cmd failed!");
+        if($opt{vverbose}) {
+                print "\n";
+        } elsif($opt{verbose}) {
+                print "done!\n";
+        }
+        return 1;
+}
+
+#
+# basic routine that downloads packages based on entries in the
+# package.lst file
+#
+sub download_packages {
+        my %package_urls = get_package_urls();
+        foreach my $package ( @ARGV ) {
+                if(!$package_urls{$package}) {
+                        print qq(\nERROR: package "$package" does not exist in $opt{package_list}\n\n);
+                        usage(1);
+                }
+                my $url = $package_urls{$package};
+                download_file($url);
+        }
+}
+
+sub querytag {
+    my ($tag, $file, $installed) = @_;
+    my $output = "";
+    if($installed) { # work against the installed package, not the file
+        $output = `rpm -q --queryformat '\%{$tag}' $file 2>/dev/null`;
+    } else {
+        $output = `rpm -qp --queryformat '\%{$tag}' $file 2>/dev/null`;
+    }
+    return $output;
+}
+
+sub install_packages {
+
+        my @install = ();
+        my $rpm;
+
+        my %rpm_names = get_rpm_names();
+        my %package_urls = get_package_urls();
+
+        chdir $opt{directory};
+
+        # download if we don't already have the package
+        foreach my $package (@ARGV) {
+                if(!$package_urls{$package}) {
+                        print qq(\nERROR: package "$package" does not exist in $opt{package_list}\n\n);
+                        usage(1);
+                }
+                my $rpm = "$rpm_names{$package}";
+                unless( (-e "$rpm") && (rpm_has_integrity($rpm)) ) {
+                        my $url = $package_urls{$package};
+                        download_file($url);
+                }
+
+                #
+                # check for dependencies
+                # 
+                my $dependency_pkg;
+                my $cmd = "rpm -q --requires -p $rpm";
+                open(INPUT,"$cmd|") or croak("Couldn't $cmd");
+                while(<INPUT>) {
+                        ($dependency_pkg) = split;
+                        if( ($package_urls{$dependency_pkg}) and ( ! grep { /^$dependency_pkg$/ } @ARGV) ){
+                                push(@ARGV, $dependency_pkg) 
+                        }
+                }
+                close(INPUT);
+        }
+
+        # verify that packages aren't already installed
+        foreach my $package (@ARGV) {
+                my $rpm = "$rpm_names{$package}";
+                if(not_installed($package,"$rpm")) {
+                        push @install, $rpm;
+                }
+        }
+
+        if(scalar(@install)) {
+                my $cmd = "rpm -U";
+                $cmd .= "hv" if($opt{verbose});
+                $cmd .= " " . (join ' ', @install);
+                print "$cmd\n" if($opt{verbose});
+                # 
+                # If the system command succeeds, it will return zero, hence the ! for perl.
+                #
+                unless(!system($cmd)) { exit 1; }
+                print "The System Installation Suite packages you've chosen are now installed!\n";
+        } else {
+                print "The System Installation Suite packages you've chosen are already installed.\n";
+        }
+}
+
+#
+# Query the host rpm db.  If the release and version aren't exactly
+# the same as the file we're going to try to install, we've got a newer
+# package (or all hell broke loose and they are trying to use this
+# tool to downgrade... NOT SUPPORTED FUNCTIONALITY)
+#
+# Usage: if( not_installed("rpm_name","rpm_file_name.rpm") ) { do stuff; }
+#
+sub not_installed {
+        my $package = shift;
+        my $rpm = shift;
+        
+        my $instver = querytag('VERSION',$package,1);
+        my $instrel = querytag('RELEASE',$package,1);
+        
+        my $filever = querytag('VERSION',$rpm,0);
+        my $filerel = querytag('RELEASE',$rpm,0);
+        
+        unless(($instver cmp $filever) == 0 and ($instrel cmp $filerel) == 0) {
+                return 1;
+        }
+        return 0;
+}
+
+#
+# returns a hash of packages -> rpm names
+#
+# Usage: my %rpm_names = get_rpm_names();
+#
+sub get_rpm_names
+{
+        my %rpm_names;
+        
+        # get available packages
+        open(FILE,"<$opt{package_list}")
+                or croak("Can't open $opt{package_list}");
+        while(<FILE>) {
+                chomp;
+                next if(m/^\s*#/);
+                next if(m/^$/);
+
+                my $rpm_name = $_;
+                $rpm_name =~ s{^.*/}{};                         # remove url part
+
+                my $package = remove_version($rpm_name);        # remove version
+                $rpm_names{$package} = $rpm_name;               # store naked pkg name
+        }
+        close(FILE);
+
+        return %rpm_names;
+}
+
+#
+# returns a hash of packages -> their_urls
+#
+# Usage: my %package_urls = get_package_urls();
+#
+sub get_package_urls
+{
+        my %package_urls;
+        
+        # get available packages
+        open(FILE,"<$opt{package_list}")
+                or croak("Can't open $opt{package_list}");
+        while(<FILE>) {
+                chomp;
+                next if(m/^\s*#/);
+                next if(m/^$/);
+                next unless(m/$package_type$/);
+                my $url = $_;
+                my $package = $_;
+
+                $package =~ s{^.*/}{};                  # remove url part
+                $package = remove_version($package);    # remove version
+                $package_urls{$package} = $url;         # store naked pkg name
+        }
+        close(FILE);
+
+        return %package_urls;
+}
+
+
+sub list_packages {
+
+        my %package_urls = get_package_urls();
+
+        print qq(Packages available for download and/or install:\n\n);
+
+        # show available packages in alphabetical order
+        foreach (sort(keys %package_urls)) {
+                if($opt{vverbose}) {
+                        print "  $package_urls{$_}\n";
+                } else {
+                        print "  $_\n";
+                }
+        }
+
+        print qq(\n);
+        print qq(To install packages, do a:\n\n);
+        print qq(  ./install --verbose PKG1 PKG2 ...\n\n);
+        print qq(For example:\n\n);
+        print qq(  ./install --verbose systemconfigurator perl-AppConfig\n);
+        print qq(\n);
+        
+        return 1;
+}
+
+# This is a horrible hack to get the sourceforge mirrors list, but I can't seem to find another way
+# Paul Greidanus (paul.greidanus@ualberta.ca)
+sub list_mirrors {
+	my $line;
+	my $cmd = "wget -q -O - http://prdownloads.sourceforge.net/systeminstaller/systeminstaller-1.04-1.noarch.rpm 2> /dev/null | grep form.submit | grep value | grep -v none";
+	my $mirror_sites = `$cmd`;
+	$mirror_sites =~ s#<[^>]*>##g;
+
+    print "The following is a list of mirrors that are currently available for use with the\n";
+    print "--mirror command.  They are listed in the form of \"MIRROR (LL)\".  LL indicates\n";
+    print "the country where the mirror is located, and \"MIRROR\" is the argument to use\n";
+    print "with the --mirror option.\n\n";
+	print "$mirror_sites\n";
+}
+
+sub usage {
+
+        my $exit_status = shift;
+        unless(defined($exit_status)) {
+                $exit_status = 1;
+        };
+
+        my $tags = join "|", (sort keys %packagelist_urls);
+        my $tags2 = join '", "', (sort keys %packagelist_urls);
+        $tags2 = '"' . $tags2 . '"';
+        
+        print <<END;
+install (part of System Installation Suite)
+
+Usage: install [--help] [-v,--verbose] [-vv,--vverbose] [--download-only] 
+               [--list] [--package-list FILE] [--tag ($tags)]
+               [--mirror (mirror)] [--mirror-list] [PKG1 PKG2 ...]
+
+ --help
+        Show this output.
+
+ --verbose, -v
+        Be verbose.
+
+ --vverbose, -vv 
+        Be very verbose.
+
+ --list
+        List available packages.
+
+ --download-only
+        Download specified packages to save them for a future install.
+
+ --tag ($tags)
+        Download packages for the release class specified by the tag.
+        (defaults to stable)
+        (ignored if --package-list is specified)
+
+ --package-list FILE
+        Use local FILE as package list instead of downloading the package 
+        list specified by --tag.
+
+ --directory DIR
+        Download packages into DIR.
+        (defaults to '/tmp/sis-packages')
+
+ --mirror MIRROR
+       Select to download via a SourceForge mirror, rather then 
+       install.sisuite.org.  The mirror needs to be a valid SourceForge 
+       mirror.
+
+ --mirror-list
+       Prints out a list of currently available mirrors from SourceForge.
+
+Examples:
+        ./install --list
+        ./install --verbose systemconfigurator perl-AppConfig
+
+END
+
+        exit $exit_status;
+}
+
+
+# full disclosure
+sub parting_message {
+        print <<END;
+################################################################################
+
+ Thanks for using System Installation Suite.  Send any questions you may
+ have to <sisuite-users\@lists.sourceforge.net>, or join us in IRC on 
+ irc.freenode.net, channel "#sisuite".  
+ 
+ If you are using a development release, please send constructive feedback
+ to <sisuite-devel\@lists.sourceforge.net>.
+
+ You can find documentation on SystemInstaller, SystemImager, and System 
+ Configurator (Three Easy Pieces) in /usr/share/doc, or at one of these
+ friendly neighborhood websites:
+
+   http://systeminstaller.sourceforge.net/
+   http://www.systemimager.org/
+   http://systemconfig.sourceforge.net/
+
+################################################################################
+
+END
+}
+
+#
+# Usage: $name = remove_version($name);
+#
+sub remove_version
+{
+        $_ = shift;
+
+        # extract package name, without version, from package name
+        m#([\w-]+)[-_].*$#;
+        return $1;
+}

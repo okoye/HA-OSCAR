@@ -82,10 +82,10 @@ def main():
    logger.subsection("populating database with primary config data")
    configdata = ["HOSTNAME", "NIC_INFO", "IP_ADDR"] #Primary/Sec Config Data
    temp = dict()
+   database_driver = ddriver.DbDriver()
    for data in configdata:
       temp[data] = sys_config[data]
-
-   database_driver = ddriver.DbDriver()
+   print temp
    database_driver.insert_db('Primary_Configuration',temp)
    logger.subsection("sucessfully populated data for primary server")
 

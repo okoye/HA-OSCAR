@@ -64,13 +64,5 @@ def configure(secondary=False, configuration=None):
          rsync_conf.append("hosts deny = *")
          fp = open(rsync_conf_path, "w")
          fp.writelines(rsync_conf)
-
-   #This is a configuration for secondary server
-   else:
-      if(configuration is None):
-         exit.open(message="synchronization setup for secondary server failed")
-      fp = open(rsync_conf_path, "w")
-      fp.writelines(configuration)
-
-def aux_configure():
-   pass #TODO: Implement auxiliary configuration
+         fp.close()
+   return 0

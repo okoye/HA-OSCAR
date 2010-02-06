@@ -104,6 +104,9 @@ def main():
       logger.subsection("rsync config failed prematurely")
       exit.open("rsync failed")
 
+   logger.section("Monit Configuration")
+   
+
 def usage():
    print "usage: haoscar_configure -m <intended mode>"
    print "<intended mode: primary|secondary>"

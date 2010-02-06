@@ -72,5 +72,6 @@ def primaryConfigurator():
 
 def secondaryConfigurator():
    logger.subsection("gathering secondary server config info")
+   config = dict()
    config = sysConfig.SysConfigurator()
    return config.secConfig()

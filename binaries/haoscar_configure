@@ -97,9 +97,13 @@ def main():
 
    if(heartbeat.configure() != 0):
       logger.subsection("heartbeat config failed prematurely, terminating installation")
-	
-   logger.section("RSync Configuration")
-   if(
+      exit.open("heartbeat configuration failed")
+   	
+   logger.section("Rsync Configuration")
+   if(datasync.configure() != 0)
+      logger.subsection("rsync config failed prematurely")
+      exit.open("rsync failed")
+
 def usage():
    print "usage: haoscar_configure -m <intended mode>"
    print "<intended mode: primary|secondary>"

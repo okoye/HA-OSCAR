@@ -32,6 +32,8 @@ init_comment = """\n#HA-OSCAR auto generated heartbeat authentication
 auth_config = "\nauth 2\n2 sha1 changeDefaultPassword\n"
 hacf_config = "\nlogfile /var/log/haoscar/heartbeat.log\nlogfacility local0\nkeepalive 2\ndeadtime 30\ninitdead 120\n"
 
+primary_conf = dict()
+secondary_conf = dict()
 
 ###################################################
 #Handles all initial setup for Heartbeat
@@ -68,22 +70,24 @@ def configure():
 	#while("NIC_INFO=" not in line):
 	#	line = FILE.readline()
 	#temp = line.split("=")
+
         ddriver = database_driver.DbDriver() 
-	nic_info = ddriver.select_db("hainfo","NIC_INFO")
-	temp = nic_info['NIC_INFO']
+	primary_conf = ddriver.select_db("Primary_Configuration")
+	secondary_conf = ddriver.select_db("Secondary_Configuration")	
+	
+	nic_info = ""
+	nic_info = primary_conf["NIC_INFO"]
 	if(len(nic_info)):
-		logger.subsection("using interface "+nic_info['NIC_INFO_P'])
-		hacf_value.append("bcast "+nic_info['NIC_INFO_P'])
+		logger.subsection("using interface "+nic_info)
+		hacf_value.append("bcast "+nic_info)
 		hacf_value.append("udpport 694\nauto_failback on\n")
 		hacf_value.append("node "+commands.getoutput("uname -n")+"\n")
 			
-		db_result = ddriver.select_db("hainfo","HOSTNAME_S")
-		if(db_result):
-			if(db_result['HOSTNAME_S']):
-				hacf_value.append("node "+db_result['HOSTNAME_S']+"\n")
-				FILE = open(hacf, "w")
-				FILE.writelines(hacf_value)
-				FILE.close()
+		if(secondary_conf['HOSTNAME']):
+			hacf_value.append("node "+secondary_conf['HOSTNAME']+"\n")
+			FILE = open(hacf, "w")
+			FILE.writelines(hacf_value)
+			FILE.close()
 	else:
 		logger.subsection("a fatal error has occured: could not retreive interface info")
 		return 1
@@ -94,18 +98,10 @@ def configure():
 	else:
 		logger.subsection("writing haresource configuration")
 
-                #Editied by Chuka Okoye
-		#***Re-routed to the HA_OSCAR database
-		#FILE = open("/etc/haoscar/haoscar.conf", "r")
-		#line = FILE.readline()
-		#while("IP_ADDR=" not in line):
-		#	line = FILE.readline()
-		#temp = line.split("=")
-
-		ip_addr = ddriver.select_db("hainfo","IP_ADDR_P")
+		ip_addr = primary_conf['IP_ADDR']
 		if(len(ip_addr)>=1):
 			haresource = []
-			haresource.append(commands.getoutput("uname -n") + " "+ ip_addr["IP_ADDR_P"])
+			haresource.append(commands.getoutput("uname -n") + " "+ ip_addr)
 			FILE = open("/etc/ha.d/haresources","w")
 			FILE.writelines(haresource)
 		else:

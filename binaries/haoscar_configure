@@ -100,7 +100,7 @@ def main():
       exit.open("heartbeat configuration failed")
    	
    logger.section("Rsync Configuration")
-   if(datasync.configure() != 0)
+   if(datasync.configure() != 0):
       logger.subsection("rsync config failed prematurely")
       exit.open("rsync failed")
 

@@ -90,7 +90,9 @@ def main():
    logger.subsection("sucessfully populated data for primary server")
 
    logger.subsection("gathering secondary server configuration info")
-   
+   sys_config = chaif.secondaryConfigurator()
+   database_driver.insert_db('Secondary_Configuration', sys_config)
+
    #We start with the HATCI
    logger.section("HATCI Setup")
    logger.section("Heartbeat Configuration")

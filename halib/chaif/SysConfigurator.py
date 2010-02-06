@@ -39,13 +39,16 @@ class SysConfigurator:
         self.ip_addr = ""
    
     #Appropriate method to call when trying to gather configuration data 
-    def initialize(self):
+    def priConfig(self):
         self.dataConfig()
         self.netConfig()
         self.serviceConfig()
         self.hostnameConfig()
         logger.subsection("finished generating configuration...")
         return self.conf_values
+
+    def secConfig(self):
+      pass
     
     def dataConfig(self):
        ########################################################################

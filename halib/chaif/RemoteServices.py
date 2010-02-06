@@ -27,11 +27,11 @@ import halib.chaif.DatabaseDriver as ddriver
 import halib.Logger as logger
 import halib.Exit as exit
  
-#Some globals
+
 #@des: The RemoteSystem class is responsible for making connections between
 # Primary and Secondary system for the exchange of data
-#@param: data_type, a string representing the TYPE of data expected
-# appropriate TYPE include: "INIT", "FINAL"
+#
+#TODO: Still being implemented for version 2.2
 class RemoteSystem(SocketServer.BaseRequestHandler):
    def __init__(self, data_type):
       self.data_type = data_type

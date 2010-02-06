@@ -99,7 +99,7 @@ def configure():
 		logger.subsection("writing haresource configuration")
 
 		ip_addr = primary_conf['IP_ADDR']
-		if(len(ip_addr)>=1):
+		if(len(ip_addr)):
 			haresource = []
 			haresource.append(commands.getoutput("uname -n") + " "+ ip_addr)
 			FILE = open("/etc/ha.d/haresources","w")

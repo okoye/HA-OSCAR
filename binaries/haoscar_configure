@@ -73,7 +73,7 @@ def main():
    #Next, we generate system configuration facts to be stored in DB
    logger.section("Gathering System Config Info")
    sys_config = dict()
-   sys_config = chaif.systemConfigurator()
+   sys_config = chaif.primaryConfigurator()
 
    #Time to setup our databases and populate it.
    logger.section("Database Initialization")
@@ -86,29 +86,11 @@ def main():
       temp[data] = sys_config[data]
 
    database_driver = ddriver.DbDriver()
-   if mode == "primary":
-      database_driver.insert_db('Primary_Configuration',temp)
-      logger.subsection("sucessfully populated data for primary server")
+   database_driver.insert_db('Primary_Configuration',temp)
+   logger.subsection("sucessfully populated data for primary server")
 
-      #Connect to secondary server and retrieve its INIT config info
-      remote = RemoteServices.RemoteSystem("INIT")
-      input = raw_input("Enter ip address of secondary server: ")
-      logger.subsection("start configuration on sec server with the switch '-m secondary'")
-      #TODO: Add error checking to ip input otherwise a crash will occur
-      remote_config = remote.client(input)
-      print "DEBUG: Remote Config is: ",remote_config
-   elif mode == "secondary":
-      database_driver.insert_db('Secondary_Configuration', temp)
-      logger.subsection("sucessfully populated data for secondary server")
-      logger.subsection("awaiting connection from primary server")
-
-      #Setup details for remote connection
-      remote = RemoteServices.RemoteSystem("INIT")
-      remote.server(temp, temp["IP_ADDR"])
-   else:
-      logger.subsection("an error has occured, installation cannot continue")
-      exit.open("unknown installation mode.")
-
+   logger.subsection("gathering secondary server configuration info")
+   
    #We start with the HATCI
    logger.section("HATCI Setup")
    logger.section("Heartbeat Configuration")
@@ -116,6 +98,8 @@ def main():
    if(heartbeat.configure() != 0):
       logger.subsection("heartbeat config failed prematurely, terminating installation")
 	
+   logger.section("RSync Configuration")
+   if(
 def usage():
    print "usage: haoscar_configure -m <intended mode>"
    print "<intended mode: primary|secondary>"

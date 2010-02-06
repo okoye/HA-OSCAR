@@ -51,17 +51,26 @@ def databaseSetup():
         database_init.create_database()
 	logger.subsection("database setup completed sucessfully")
 
-def remoteSetup():
-	logger.subsection("initializing remote services library")
+#@des:   The remoteCommunication method is responsible for setting up
+#        all details necessary for sending information using the heartbeat
+#        protocol. 
+#
+#TODO BEING IMPLEMENTED FOR HAOSCAR V2.2
+def remoteCommunication():
+	logger.subsection("initializing remote communication library")
 	remote.initialize()
-	logger.subsection("remote services initalization completed")
+	logger.subsection("remote comm lib initalization completed")
 
 #@des:	The systemConfigurator method retrieves critical system facts
 #		It gets information about network interface, hdd partitioning and other
 #		things needed.
 
-def systemConfigurator():
-	logger.subsection("gathering system configuration facts")
-        config = sysConfig.SysConfigurator()
-	return config.initialize()
-	
+def primaryConfigurator():
+   logger.subsection("gathering system configuration facts")
+   config = sysConfig.SysConfigurator()
+   return config.priConfig()
+
+def secondaryConfigurator():
+   logger.subsection("gathering secondary server config info")
+   config = sysConfig.SysConfigurator()
+   return config.secConfig()

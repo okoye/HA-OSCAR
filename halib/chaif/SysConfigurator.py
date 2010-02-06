@@ -52,14 +52,14 @@ class SysConfigurator:
     def secConfig(self):
       sec_config = dict()
       temp = ""
-      temp = raw_input("enter the host name of the secondary server")
+      temp = raw_input("enter the host name of the secondary server: ")
       if (temp is not None):#Perform some basic error check.
                             #TODO: Ensure only alphanumeric characters
          sec_config['HOSTNAME'] = temp
       database_driver = ddriver.DbDriver()
       sec_config['NIC_INFO'] = database_driver.select_db("Primary_Configuration")['NIC_INFO']
       sec_config['IP_ADDR'] = raw_input("enter a valid ip addr for secondary\
-      server")
+      server: ")
       return sec_config
     
     def dataConfig(self):

@@ -76,15 +76,15 @@ def configure():
 	secondary_conf = ddriver.select_db('Secondary_Configuration')	
 	
 	nic_info = ""
-	nic_info = primary_conf["NIC_INFO"]
+	nic_info = primary_conf[0]["NIC_INFO"]
 	if(len(nic_info)):
 		logger.subsection("using interface "+nic_info)
 		hacf_value.append("bcast "+nic_info)
 		hacf_value.append("udpport 694\nauto_failback on\n")
 		hacf_value.append("node "+commands.getoutput("uname -n")+"\n")
 			
-		if(secondary_conf['HOSTNAME']):
-			hacf_value.append("node "+secondary_conf['HOSTNAME']+"\n")
+		if(secondary_conf[0]['HOSTNAME']):
+			hacf_value.append("node "+secondary_conf[0]['HOSTNAME']+"\n")
 			FILE = open(hacf, "w")
 			FILE.writelines(hacf_value)
 			FILE.close()
@@ -98,7 +98,7 @@ def configure():
 	else:
 		logger.subsection("writing haresource configuration")
 
-		ip_addr = primary_conf['IP_ADDR']
+		ip_addr = primary_conf[0]['IP_ADDR']
 		if(len(ip_addr)):
 			haresource = []
 			haresource.append(commands.getoutput("uname -n") + " "+ ip_addr)

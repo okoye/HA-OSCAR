@@ -73,7 +73,7 @@ def configure():
 
         ddriver = database_driver.DbDriver() 
 	primary_conf = ddriver.select_db('Primary_Configuration')
-	secondary_conf = ddriver.select_db("Secondary_Configuration")	
+	secondary_conf = ddriver.select_db('Secondary_Configuration')	
 	
 	nic_info = ""
 	nic_info = primary_conf["NIC_INFO"]

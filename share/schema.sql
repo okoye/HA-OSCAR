@@ -16,7 +16,7 @@
 --  USA
 
 --
--- Copyright (c) 2009	Okoye Chuka D. <okoye9@gmail.com>	
+-- Copyright (c) 2010	Okoye Chuka D. <okoye9@gmail.com>	
 --                    	All rights reserved.
 
 -- System Config Info
@@ -31,7 +31,6 @@ CREATE TABLE Secondary_Configuration(
       IP_ADDR text
 );
 CREATE TABLE General_Configuration(
-      SERVICES blob,
       DATA_DIR blob,
       DATA_SYNC text
 );

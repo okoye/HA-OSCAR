@@ -89,16 +89,19 @@ def main():
    print temp
    database_driver.insert_db('Primary_Configuration',temp)
    logger.subsection("sucessfully populated data for primary server")
- 
+
+   temp = dict()
    temp['DATA_DIR'] = sys_config['DATA_DIR']
    temp['DATA_SYNC'] = sys_config['DATA_SYNC']
+   print "DEBUG: ",temp
    database_driver.insert_db('General_Configuration',temp)
    logger.subsection("sucessfully populated data for general configuration")
 
-   logger.subsection("gathering secondary server configuration info")
+   logger.subsection("populating database with secondary config data")
    sys_config = chaif.secondaryConfigurator()
+   print sys_config
    database_driver.insert_db('Secondary_Configuration', sys_config)
-
+   logger.subsection("sucessfully populated data for secondary server")
    #We start with the HATCI
    logger.section("HATCI Setup")
    logger.section("Heartbeat Configuration")

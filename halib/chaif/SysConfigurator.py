@@ -23,6 +23,7 @@ import fcntl
 import struct
 import array
 import commands
+from marshal import dumps
 import halib.Logger as logger
 import halib.chaif.DatabaseDriver as ddriver
 
@@ -89,7 +90,7 @@ class SysConfigurator:
        for path in self.validated_paths:
           path_hash[count] = path
           count += 1
-       self.conf_values['DATA_DIR'] = path_hash
+       self.conf_values['DATA_DIR'] = dumps(path_hash)
     
        #For planned future support of other synchronization mechanisms like 
        #DRBD, CSYNC ...

@@ -105,7 +105,7 @@ def configure():
     FILE.write(target)
 
   FILE.close()
-
+  return 0
 # Generate rules for common services
 def generate_rules(service):
   header, group, process, pid, start, stop, restarts, cycles, footer= \

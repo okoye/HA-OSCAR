@@ -29,6 +29,7 @@ import halib.chaif.RemoteServices as RemoteServices
 import halib.chaif.DatabaseDriver as ddriver
 import halib.hatci.Heartbeat as heartbeat
 import halib.hatci.Rsync as datasync
+import halib.hatci.Monit as monit
 import halib.Exit as exit
 
 def main():
@@ -112,7 +113,9 @@ def main():
       exit.open("rsync failed")
 
    logger.section("Monit Configuration")
-   
+   if(monit.configure() != 0):
+      logger.subsection("monit config failed prematurely")
+      exit.open("monit failed")
 
 def usage():
    print "usage: haoscar_configure -m <intended mode>"

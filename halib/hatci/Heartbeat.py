@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# Copyright (c) 2009 Okoye Chuka D.<okoye9@gmail.com>
+# Copyright (c) 2010 Okoye Chuka D.<okoye9@gmail.com>
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -110,5 +110,4 @@ def configure():
 
 	#If we have not yet died at this point we can assume the configuration was
 	#a success
-	system("/etc/init.d/heartbeat restart")
 	return 0

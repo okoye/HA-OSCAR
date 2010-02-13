@@ -19,10 +19,11 @@
 
 import sys
 import commands
-import halib.chaif.DatabaseDriver as ddriver
+import halib.chaif.DatabaseDriver as database
 from os import path
 from os import system
 import halib.Exit as exit
+import halib.Logger as logger
 
 init_comment = """\n#HA-OSCAR auto generated config
 #file."""
@@ -33,15 +34,15 @@ rsync_conf = []
 #      ones to /etc/rsync.bak
 def configure(secondary=False, configuration=None):
    #Does a file pre-exist?
-   rsync_conf_path = "/etc/rsyncd.conf"      
-   if(os.path.isfile(rsync_conf_path)):
+   rsync_conf_path = "/etc/rsyncd.conf"
+   if(path.isfile(rsync_conf_path)):
       logger.subsection("removing previous rsync configuration file to\
       rsyncd.bak")
       system("mv /etc/rsyncd.conf /etc/rsync.bak")
    logger.subsection("creating new rsync config file")
    
    rsync_conf.append(init_comment)
-
+   ddriver = database.DbDriver()
    #Setup details for primary server
    if(secondary is False):
       #First we set some global rsync variables
@@ -52,7 +53,9 @@ def configure(secondary=False, configuration=None):
       
       #Now we start setting up all paths specified in 
       #First retrieve all paths and put in a list
-      sync_directory = ddriver.select_db("DATA_DIR")
+      directory = ddriver.select_db('General_Configuration')
+      sync_directory = directory[0]["DATA_DIR"]
+      print "DEBUG: sync_directory ",sync_directory
       count = 0
 
       for key, value in sync_directory:

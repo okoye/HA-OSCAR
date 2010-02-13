@@ -88,6 +88,11 @@ def main():
    print temp
    database_driver.insert_db('Primary_Configuration',temp)
    logger.subsection("sucessfully populated data for primary server")
+ 
+   temp['DATA_DIR'] = sys_config['DATA_DIR']
+   temp['DATA_SYNC'] = sys_config['DATA_SYNC']
+   database_driver.insert_db('General_Configuration',temp)
+   logger.subsection("sucessfully populated data for general configuration")
 
    logger.subsection("gathering secondary server configuration info")
    sys_config = chaif.secondaryConfigurator()

@@ -31,7 +31,7 @@ CREATE TABLE Secondary_Configuration(
       IP_ADDR text
 );
 CREATE TABLE General_Configuration(
-      DATA_DIR blob,
+      DATA_DIR text,
       DATA_SYNC text
 );
 CREATE TABLE Gather_Modules(

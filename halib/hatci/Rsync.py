@@ -54,16 +54,21 @@ def configure(secondary=False, configuration=None):
       #Now we start setting up all paths specified in 
       #First retrieve all paths and put in a list
       directory = ddriver.select_db('General_Configuration')
+      ip = ddriver.select_db('Secondary_Configuration')
+
       sync_directory = directory[0]["DATA_DIR"]
-      print "DEBUG: sync_directory ",sync_directory
+      secondary_ip = ip[0]["IP_ADDR"]
       count = 0
 
-      for key, value in sync_directory:
+      sync_directory = sync_directory.split(';')
+      sync_directory.pop() #Last item is void.
+      
+      for key in sync_directory:
          rsync_conf.append("["+key+"]")
-         rsync_conf.append("path = "+ value)
+         rsync_conf.append("path = "+ key)
          rsync_conf.append("read only = no")
          rsync_conf.append("list = no")
-         rsync_conf.append("hosts allow = "+ IP_ADDR_S)
+         rsync_conf.append("hosts allow = "+ secondary_ip)
          rsync_conf.append("hosts deny = *")
          fp = open(rsync_conf_path, "w")
          fp.writelines(rsync_conf)

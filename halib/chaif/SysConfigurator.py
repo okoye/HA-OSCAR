@@ -36,7 +36,7 @@ class SysConfigurator:
         self.str_value = ""
         self.conf_values = dict()
         self.paths = []
-        self.validated_paths = []
+        self.validated_paths = ""
         self.interface_list = []
         self.ip_addr = ""
    
@@ -83,15 +83,9 @@ class SysConfigurator:
        for path in self.paths:
           if(os.path.exists(path)):
              logger.subsection(path+" is a valid path")
-             self.validated_paths.append(path)
-    
-       count = 0
-       path_hash = dict()
-       for path in self.validated_paths:
-          path_hash[count] = path
-          count += 1
-       self.conf_values['DATA_DIR'] = dumps(path_hash)
-    
+             self.validated_paths += path+";"
+      
+       self.conf_values['DATA_DIR'] = self.validated_paths
        #For planned future support of other synchronization mechanisms like 
        #DRBD, CSYNC ...
        self.conf_values['DATA_SYNC'] = "RSYNC"   
@@ -108,10 +102,10 @@ class SysConfigurator:
                                s.fileno(),
                                0x8912, #SIOCGIFCONF
                                struct.pack('iL',bytes, names.buffer_info()[0]
-                               )))[0]
+                              )))[0]
        namestr = names.tostring()
-       self.interface_list = [namestr[i:i+32].split('\0',1)[0] for i in range(0, outbytes, 32)]
-    
+       self.interface_list = [namestr[i:i+32].split('\0',1)[0] for i in
+range(0, outbytes, 32)] #TODO: Fix parsing
        if (len(self.interface_list) == 1):
           logger.subsection("detected only one interface: "+self.interface_list[0])
           logger.subsection("adding to config file")
@@ -138,7 +132,7 @@ class SysConfigurator:
                          struct.pack('256s', self.str_value[:15])
                          )[20:24])
              self.conf_values['IP_ADDR']=self.ip_addr
-    
+          
     ########################################################################
     #We finally provide a default list of services to be monitored 'ssh daemon' really
     #and the HA-DAEMON

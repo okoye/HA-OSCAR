@@ -102,7 +102,7 @@ def configure():
   FILE = open("/etc/monit/monitrc", "a")
   for service in services:
     #print generate_rules(service)
-    FILE.write(target)
+    FILE.write(service)
 
   FILE.close()
   return 0

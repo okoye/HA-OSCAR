@@ -37,19 +37,19 @@ def configure(secondary=False, configuration=None):
    rsync_conf_path = "/etc/rsyncd.conf"
    if(path.isfile(rsync_conf_path)):
       logger.subsection("removing previous rsync configuration file to\
-      rsyncd.bak")
+rsyncd.bak")
       system("mv /etc/rsyncd.conf /etc/rsync.bak")
    logger.subsection("creating new rsync config file")
    
-   rsync_conf.append(init_comment)
+   rsync_conf.append(init_comment+"\n")
    ddriver = database.DbDriver()
    #Setup details for primary server
    if(secondary is False):
       #First we set some global rsync variables
-      rsync_conf.append("motd file = /etc/rsyncd.motd")
-      rsync_conf.append("log file = /var/log/rsyncd.log")
-      rsync_conf.append("pid file = /var/run/haoscar_rsyncd.pid")
-      rsync_conf.append("lock file = /var/run/rsync.lock")
+      rsync_conf.append("motd file = /etc/rsyncd.motd\n")
+      rsync_conf.append("log file = /var/log/rsyncd.log\n")
+      rsync_conf.append("pid file = /var/run/haoscar_rsyncd.pid\n")
+      rsync_conf.append("lock file = /var/run/rsync.lock\n")
       
       #Now we start setting up all paths specified in 
       #First retrieve all paths and put in a list
@@ -64,12 +64,12 @@ def configure(secondary=False, configuration=None):
       sync_directory.pop() #Last item is void.
       
       for key in sync_directory:
-         rsync_conf.append("["+key+"]")
-         rsync_conf.append("path = "+ key)
-         rsync_conf.append("read only = no")
-         rsync_conf.append("list = no")
-         rsync_conf.append("hosts allow = "+ secondary_ip)
-         rsync_conf.append("hosts deny = *")
+         rsync_conf.append("["+key+"]\n")
+         rsync_conf.append("path = "+ key+"\n")
+         rsync_conf.append("read only = no\n")
+         rsync_conf.append("list = no\n")
+         rsync_conf.append("hosts allow = "+ secondary_ip+"\n")
+         rsync_conf.append("hosts deny = *\n")
          fp = open(rsync_conf_path, "w")
          fp.writelines(rsync_conf)
          fp.close()

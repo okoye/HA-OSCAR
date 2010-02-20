@@ -50,8 +50,13 @@ def configure():
   FILE2.write(data_to_write)
   FILE2.close()
 
+   #Added and modified by Chuka
+   #Issues: generate_rules is not being called,remove it
+   #        errorsList was not returned, use exit module
+   #TODO    Re-write monit module in Alpha 2.
+
   services = \
-      [ 
+      """
           { 
             "header" : 
               [""],
@@ -97,12 +102,12 @@ def configure():
           },
 
 
-    ] 
+    """ 
 
   FILE = open("/etc/monit/monitrc", "a")
-  for service in services:
+  #for service in services:
     #print generate_rules(service)
-    FILE.write(service)
+  FILE.write(services)
 
   FILE.close()
   return 0

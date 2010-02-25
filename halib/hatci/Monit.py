@@ -42,14 +42,17 @@ def configure():
   #TODO: Make this part automatic.
   #Configure each component for Mon-IT
   #Apache Config:
+  logger.subsection("adding apache config")
   rules.append("\n")
   rules.append(apache.configure())
 
   #Sshd Config:
+  logger.subsection("adding sshd config")
   rules.append("\n")
   rules.append(ssh.configure())
 
   #Syslog Config:
+  logger.subsection("adding syslog config")
   rules.append("\n")
   rules.append(syslog.configure())
 

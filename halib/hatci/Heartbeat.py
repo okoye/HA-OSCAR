@@ -30,7 +30,6 @@ init_comment = """\n#HA-OSCAR auto generated heartbeat authentication
 #file. You can change these values but ensure that the file remains
 #consistent on the primary and secondary server\n"""
 
-auth_config = "\nauth 2\n"
 hacf_config = "\nlogfile /var/log/haoscar/heartbeat.log\nlogfacility local0\nkeepalive 2\ndeadtime 30\ninitdead 120\n"
 
 primary_conf = dict()
@@ -49,7 +48,7 @@ def configure():
 	 auth_value.append(init_comment)
 	 logger.subsection("creating authentication file")
          auth_passwd = getpass.getpass("enter heartbeat authentication passwd: ")
-	 auth_value.append("2 sha1 ")
+	 auth_value.append("\nauth 2\n2 sha1 ")
          auth_value.append(auth_passwd+"\n")
 	 FILE = open(auth,"w+")
 	 FILE.writelines(auth_value)
@@ -81,8 +80,8 @@ def configure():
 	nic_info = primary_conf[0]["NIC_INFO"]
 	if(len(nic_info)):
 		logger.subsection("using interface "+nic_info)
-		hacf_value.append("bcast "+nic_info)
-		hacf_value.append("\nudpport 694\nauto_failback on\n")
+		hacf_value.append("\nudpport 694 \nbcast "+nic_info)
+		hacf_value.append("\nauto_failback on\n")
 		hacf_value.append("node "+commands.getoutput("uname -n")+"\n")
 			
 		if(secondary_conf[0]['HOSTNAME']):

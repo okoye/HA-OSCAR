@@ -37,7 +37,7 @@ def configure(secondary=False, configuration=None):
    rsync_conf_path = "/etc/rsyncd.conf"
    if(path.isfile(rsync_conf_path)):
       logger.subsection("removing previous rsync configuration file to\
-rsyncd.bak")
+ rsyncd.bak")
       system("mv /etc/rsyncd.conf /etc/rsync.bak")
    logger.subsection("creating new rsync config file")
    

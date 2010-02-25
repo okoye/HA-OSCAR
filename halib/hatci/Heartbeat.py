@@ -19,6 +19,7 @@
 
 import sys
 import commands
+import getpass
 import halib.Logger as logger
 import halib.chaif.DatabaseDriver as database_driver
 from os import path
@@ -29,7 +30,7 @@ init_comment = """\n#HA-OSCAR auto generated heartbeat authentication
 #file. You can change these values but ensure that the file remains
 #consistent on the primary and secondary server\n"""
 
-auth_config = "\nauth 2\n2 sha1 changeDefaultPassword\n"
+auth_config = "\nauth 2\n"
 hacf_config = "\nlogfile /var/log/haoscar/heartbeat.log\nlogfacility local0\nkeepalive 2\ndeadtime 30\ninitdead 120\n"
 
 primary_conf = dict()
@@ -47,8 +48,9 @@ def configure():
 	 auth_value = []
 	 auth_value.append(init_comment)
 	 logger.subsection("creating authentication file")
-	 #Eventually, these values should be extracted from the ha database
-	 auth_value.append(auth_config)
+         auth_passwd = getpass.getpass("enter heartbeat authentication passwd: ")
+	 auth_value.append("2 sha1 ")
+         auth_value.append(auth_passwd+"\n")
 	 FILE = open(auth,"w+")
 	 FILE.writelines(auth_value)
 	 system("chmod 600 /etc/ha.d/authkeys")
@@ -80,7 +82,7 @@ def configure():
 	if(len(nic_info)):
 		logger.subsection("using interface "+nic_info)
 		hacf_value.append("bcast "+nic_info)
-		hacf_value.append("udpport 694\nauto_failback on\n")
+		hacf_value.append("\nudpport 694\nauto_failback on\n")
 		hacf_value.append("node "+commands.getoutput("uname -n")+"\n")
 			
 		if(secondary_conf[0]['HOSTNAME']):

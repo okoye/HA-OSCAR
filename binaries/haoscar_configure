@@ -71,52 +71,60 @@ def main():
    logger.section("Environment Configuration")
    env.configureEnvironment()
 
-   #Next, we generate system configuration facts to be stored in DB
-   logger.section("Gathering System Config Info")
-   sys_config = dict()
-   sys_config = chaif.primaryConfigurator()
+   #SETUP INFORMATION FOR PRIMARY SERVER
+   if(mode == "primary"):
+      logger.section("PRIMARY SERVER")
+      #Next, we generate system configuration facts to be stored in DB
+      logger.section("Gathering System Config Info")
+      sys_config = dict()
+      sys_config = chaif.primaryConfigurator()
 
-   #Time to setup our databases and populate it.
-   logger.section("Database Initialization")
-   chaif.databaseSetup()
+      #Time to setup our databases and populate it.
+      logger.section("Database Initialization")
+      chaif.databaseSetup()
 
-   logger.subsection("populating database with primary config data")
-   configdata = ["HOSTNAME", "NIC_INFO", "IP_ADDR"] #Primary/Sec Config Data
-   temp = dict()
-   database_driver = ddriver.DbDriver()
-   for data in configdata:
-      temp[data] = sys_config[data]
-   print temp
-   database_driver.insert_db('Primary_Configuration',temp)
-   logger.subsection("sucessfully populated data for primary server")
-   temp = dict()
-   temp['DATA_DIR'] = sys_config['DATA_DIR']
-   temp['DATA_SYNC'] = sys_config['DATA_SYNC']
-   database_driver.insert_db('General_Configuration',temp)
-   logger.subsection("sucessfully populated data for general configuration")
+      logger.subsection("populating database with primary config data")
+      configdata = ["HOSTNAME", "NIC_INFO", "IP_ADDR"] #Primary/Sec Config Data
+      temp = dict()
+      database_driver = ddriver.DbDriver()
+      for data in configdata:
+         temp[data] = sys_config[data]
+   
+      database_driver.insert_db('Primary_Configuration',temp)
+      logger.subsection("sucessfully populated data for primary server")
+      temp = dict()
+      temp['DATA_DIR'] = sys_config['DATA_DIR']
+      temp['DATA_SYNC'] = sys_config['DATA_SYNC']
+      database_driver.insert_db('General_Configuration',temp)
+      logger.subsection("sucessfully populated data for general configuration")
 
-   logger.subsection("populating database with secondary config data")
-   sys_config = chaif.secondaryConfigurator()
-   print sys_config
-   database_driver.insert_db('Secondary_Configuration', sys_config)
-   logger.subsection("sucessfully populated data for secondary server")
-   #We start with the HATCI
-   logger.section("HATCI Setup")
-   logger.section("Heartbeat Configuration")
+      logger.subsection("populating database with secondary config data")
+      sys_config = chaif.secondaryConfigurator()
+      database_driver.insert_db('Secondary_Configuration', sys_config)
+      logger.subsection("sucessfully populated data for secondary server")
+      #We start with the HATCI
+      logger.section("HATCI Setup")
+      logger.section("Heartbeat Configuration")
 
-   if(heartbeat.configure() != 0):
-      logger.subsection("heartbeat config failed prematurely, terminating installation")
-      exit.open("heartbeat configuration failed")
+      if(heartbeat.configure() != 0):
+         logger.subsection("heartbeat config failed prematurely, terminating installation")
+         exit.open("heartbeat configuration failed")
+      logger.subsection("heartbeat configuration completed")
    	
-   logger.section("Rsync Configuration")
-   if(datasync.configure() != 0):
-      logger.subsection("rsync config failed prematurely")
-      exit.open("rsync failed")
+      logger.section("Rsync Configuration")
+      if(datasync.configure() != 0):
+         logger.subsection("rsync config failed prematurely")
+         exit.open("rsync failed")
 
-   logger.section("Monit Configuration")
-   if(monit.configure() != 0):
-      logger.subsection("monit config failed prematurely")
-      exit.open("monit failed")
+      logger.section("Monit Configuration")
+      if(monit.configure() != 0):
+         logger.subsection("monit config failed prematurely")
+         exit.open("monit failed")
+      logger.subsection("monit configuration completed")
+
+   elif(mode == "secondary"):
+      logger.section("SECONDARY SERVER")
+      
 
 def usage():
    print "usage: haoscar_configure -m <intended mode>"

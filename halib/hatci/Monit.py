@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 #
-# Copyright (c) 2010 Himanshu Chhetri<okoye9@gmail.com>
+# Copyright (c) 2010 Himanshu Chhetri<himanshuchettri@gmail.com>
+#                    Okoye Chuka D. <okoye9@gmail.com>
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -50,87 +51,5 @@ def configure():
   FILE2.write(data_to_write)
   FILE2.close()
 
-   #Added and modified by Chuka
-   #Issues: generate_rules is not being called,remove it
-   #        errorsList was not returned, use exit module
-   #TODO    Re-write monit module in Alpha 2.
-
-  services = \
-      """
-          { 
-            "header" : 
-              [""],
-            "group": "",
-            "process" : "sshd", "pid" : "/var/run/sshd.pid",
-            "group" : "",
-            "start" : "/etc/init.d/sshd start",
-            "stop" : "/etc/init.d/sshd stop",
-            "restarts" : 5, "cycles" : 5,
-            "footer" : 
-              [
-                "if failed port 22 protocol ssh then restart"
-              ]
-          },
-
-          { 
-            "header" : 
-              [""],
-            "group": "www",
-            "process" : "apache", "pid" : "/var/run/httpd.pid",
-            "start" : "/etc/init.d/apache start",
-            "stop" : "/etc/init.d/apache stop",
-            "restarts" : 5, "cycles" : 5,
-            "footer" : 
-              [
-                ""
-              ]
-          },
-
-          { 
-            "header" : 
-              [""],
-            "group": "",
-            "process" : "syslogd", "pid" : "/var/run/syslogd.pid",
-            "start" : "/etc/init.d/sysklogd start",
-            "stop" : "/etc/init.d/sysklogd stop",
-            "restarts" : 5, "cycles" : 5,
-            "footer" : 
-              [
-                "check file syslogd_file with path /var/log/syslog",
-                "if timestamp > 65 minutes then alert"
-              ]
-          },
-
-
-    """ 
-
-  FILE = open("/etc/monit/monitrc", "a")
-  #for service in services:
-    #print generate_rules(service)
-  FILE.write(services)
-
-  FILE.close()
-  return 0
-# Generate rules for common services
-def generate_rules(service):
-  header, group, process, pid, start, stop, restarts, cycles, footer= \
-      '\n'.join(service["header"]), \
-      service["group"], \
-      service["process"], \
-      service["pid"], \
-      service["start"], \
-      service["stop"], \
-      service["restarts"], \
-      service["cycles"], \
-      '\n'.join(service["footer"])
-
-  target = "%s\n" % header
-  target += "check process %s with pidfile %s\n" % ( process, pid )
-  target += "start program  %s\n" % start
-  target += "stop program  %s\n" % stop
-  target += "if %s restarts within %s cycles then timeout\n" % \
-      ( restarts, cycles )
-  target += "%s\n" % footer
-
-  return target
+ #Configure each component for Mon-IT
 

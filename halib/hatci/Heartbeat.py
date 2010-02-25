@@ -30,7 +30,7 @@ init_comment = """\n#HA-OSCAR auto generated heartbeat authentication
 #file. You can change these values but ensure that the file remains
 #consistent on the primary and secondary server\n"""
 
-hacf_config = "\nlogfile /var/log/haoscar/heartbeat.log\nlogfacility local0\nkeepalive 2\ndeadtime 30\ninitdead 120\n"
+hacf_config = "\nlogfile /var/log/haoscar/heartbeat.log\nudpport 694\nlogfacility local0\nkeepalive 2\ndeadtime 30\ninitdead 120\n"
 
 primary_conf = dict()
 secondary_conf = dict()
@@ -80,7 +80,7 @@ def configure():
 	nic_info = primary_conf[0]["NIC_INFO"]
 	if(len(nic_info)):
 		logger.subsection("using interface "+nic_info)
-		hacf_value.append("\nudpport 694 \nbcast "+nic_info)
+		hacf_value.append("\nbcast "+nic_info)
 		hacf_value.append("\nauto_failback on\n")
 		hacf_value.append("node "+commands.getoutput("uname -n")+"\n")
 			

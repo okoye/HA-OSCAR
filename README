@@ -1,0 +1,32 @@
+#Pre Configuration Steps
+Since the package management utility has not yet been configured, you will have
+to manually install "heartbeat", "sqlite"(and its python bindings), "monit".
+
+Also, create the directory "/usr/share/haoscar" and copy the schema.sql file
+from share directory in HA-OSCAR download directory to "/usr/share/haoscar"
+
+#Post Configuration Steps
+Step 1. Run HA - OSCAR installation by navigating to binaries then running the
+script haoscar_configure with the switch primary.
+
+Step 2. If any error found, copy the output of the error and the command used
+to run haoscar installation.
+
+Step 3. Go to gist.github.com and paste the output in the empty box and click
+on "Add Another File".
+
+Step 4. In the new textbox paste the output of the command "lsb_release -a" and
+click on "Add Another File".
+
+Step 5. In the new textbox paste the output of the command "git log -n1" and
+click on "Create Public Gist"
+
+Step 6. Copy the url which is in the form http://gist.github.com/xxxxxxx (where
+xxxxxxx is an arbitrary number)
+
+Step 7. Go to http://github.com/okoye/HA-OSCAR/issues and click "Create Issue".
+
+Step 8. Paste the url you copied earlier on the space provided and give it an
+appropiate title/description.
+
+Step 9. Click "Create a new Issue" 

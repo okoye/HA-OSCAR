@@ -22,35 +22,44 @@ import commands
 import halib.Logger as logger
 import halib.chaif.DatabaseDriver as database_driver
 import halib.hatci.monit.Apache as apache
+import halib.hatci.monit.Sshd as ssh
+import halib.hatci.monit.Syslog as syslog
 from os import path
 from os import system
 import halib.Exit as exit
 
-init_comment = """\n#HA-OSCAR auto generated monit configuration"""
-
+init_comment = """\n#HA-OSCAR auto generated Mon-it configuration"""
+rules = []
 
 ###################################################
-#Handles all initial setup for Monit
+#Handles all setup for Monit
 ###################################################
 def configure():
-  # Set setup=1 in /etc/default/monit
-  data_to_write = ""
-  target_file = "/etc/default/monit"
-  FILE = open(target_file, "r")
+  rules.append(init_comment)
+   
+  rules.append("\nstartup=1\n")
 
+  #TODO: Make this part automatic.
+  #Configure each component for Mon-IT
+  #Apache Config:
+  rules.append("\n")
+  rules.append(apache.configure())
+
+  #Sshd Config:
+  rules.append("\n")
+  rules.append(ssh.configure())
+
+  #Syslog Config:
+  rules.append("\n")
+  rules.append(syslog.configure())
+
+  #We can now write out to config file
+  FILE = open("/etc/default/monit", "w")
   try:
-    for line in FILE:
-      if "startup=0" in line:
-        data_to_write += "startup=1\n"
-      else:
-        data_to_write += line
+    for line in rules:
+      FILE.write(line)
     FILE.close()
   except IOError:
-    exit.open("could not write to mon-it config file")
+    exit.open("could not write monit rules")
 
-  FILE2 = open(target_file, "w")
-  FILE2.write(data_to_write)
-  FILE2.close()
-
- #Configure each component for Mon-IT
-  ss
+  return 0

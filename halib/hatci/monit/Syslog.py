@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 #
-# Copyright (c) 2009 Okoye Chuka D.<okoye9@gmail.com>
-#                    Himanshu CHhetri <himanshuchhetri@gmail.com>        
+# Copyright (c) 2010 Okoye Chuka D.<okoye9@gmail.com>        
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -18,4 +17,14 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+configuration = """
+check process syslogd with pidfile /var/run/syslogd.pid
+start program  /etc/init.d/sysklogd start
+stop program  /etc/init.d/sysklogd stop
+if 5 restarts within 5 cycles then timeout
+check file syslogd_file with path /var/log/syslog
+if timestamp > 65 minutes then alert
+"""
 
+def configure():
+   return configuration

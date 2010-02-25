@@ -37,7 +37,9 @@ rules = []
 def configure():
   rules.append(init_comment)
    
-  rules.append("\nstartup=1\n")
+  FILE = open("/etc/default/monit", "w")  
+  FILE.write(init_comment+"\nstartup=1\n")
+  FILE.close()
 
   #TODO: Make this part automatic.
   #Configure each component for Mon-IT
@@ -56,8 +58,9 @@ def configure():
   rules.append("\n")
   rules.append(syslog.configure())
 
+  #TODO: Back up previous version of monitrc
   #We can now write out to config file
-  FILE = open("/etc/default/monit", "w")
+  FILE = open("/etc/monit/monitrc", "w")
   try:
     for line in rules:
       FILE.write(line)

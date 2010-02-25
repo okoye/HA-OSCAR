@@ -1,1 +1,1 @@
-__all__=["Rsync","Heartbeat","Monit","Puppet"]
+__all__=["Rsync","Heartbeat","Monit","monit"]

@@ -20,7 +20,8 @@
 import sys
 import commands
 import halib.Logger as logger
-import halib.chaif.DatabaseDriver as database_drive
+import halib.chaif.DatabaseDriver as database_driver
+import halib.hatci.monit.Apache as apache
 from os import path
 from os import system
 import halib.Exit as exit
@@ -45,11 +46,11 @@ def configure():
         data_to_write += line
     FILE.close()
   except IOError:
-    errorsList.append("Cannot access " + data_to_write)
+    exit.open("could not write to mon-it config file")
 
   FILE2 = open(target_file, "w")
   FILE2.write(data_to_write)
   FILE2.close()
 
  #Configure each component for Mon-IT
-
+  ss

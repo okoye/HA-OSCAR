@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 #
-# Copyright (c) 2009 Okoye Chuka D.<okoye9@gmail.com>
-#                    Himanshu CHhetri <himanshuchhetri@gmail.com>        
+# Copyright (c) 2010 Okoye Chuka D.<okoye9@gmail.com>        
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -18,4 +17,12 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-
+configuration = """
+check process sshd with pidfile /var/run/sshd.pid
+start program  /etc/init.d/sshd start
+stop program  /etc/init.d/sshd stop
+if 5 restarts within 5 cycles then timeout
+if failed port 22 protocol ssh then restart
+"""
+def configure():
+   return configuration

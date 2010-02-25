@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #
-# Copyright (c) 2009 Okoye Chuka D. <okoye9@gmail.com>  
+# Copyright (c) 2010 Okoye Chuka D. <okoye9@gmail.com>  
 #                    All rights reserved.
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -125,6 +125,18 @@ def main():
    elif(mode == "secondary"):
       logger.section("SECONDARY SERVER")
       
+
+   #At this point we have finished our installation
+   #We now start all services
+   
+   logger.section("Cleanup...")
+   raw_input("press enter key when secondary server is rebooting ")
+
+   #TODO: Make sure there are no errors in starting
+   commands.getoutput("/etc/init.d/heartbeat restart")
+   commands.getoutput("/etc/init.d/monit restart")
+
+   logger.subsection("ha-oscar installation complete")
 
 def usage():
    print "usage: haoscar_configure -m <intended mode>"

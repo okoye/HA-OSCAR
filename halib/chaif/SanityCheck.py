@@ -18,6 +18,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import os
 from commands import getoutput 
 from os import getenv 
 
@@ -26,10 +27,9 @@ errorsList = []
 def initialize():
 	rootCheck()
 	rubyCheck()
-	#sshCheck is un-necessary: Chuka Okoye
-	#sshCheck()
 	networkCheck()
 	osCheck()
+        heartbeatCheck()
 	return errorsList
 
 def rootCheck():
@@ -41,6 +41,7 @@ def rubyCheck():
         and "no ruby" in getoutput("which ruby"):
 		errorsList.append("Ruby not found.")
 
+#sshCheck is unnecessary
 def sshCheck():
 	remoteRootEnabled = False
 	try:
@@ -66,3 +67,11 @@ def osCheck():
 			osfound = True
 			break
 	if not osfound : errorsList.append("Unsupported Operating System")
+
+def heartbeatCheck():
+   if (not (os.path.exists("/etc/init.d/heartbeat"))):
+      errorsList.append("Heartbeat is not installed")
+
+def rsyncCheck():
+   if(not (os.path.exists("/usr/bin/rsync"))):
+      errorsList.append("Rsync is not installed")

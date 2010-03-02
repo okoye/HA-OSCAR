@@ -1,1 +1,2 @@
-__all__ = ["Chaif","SysConfigurator","SanityCheck","DatabaseDriver","RemoteServices"]
+__all__ =["Chaif","SysConfigurator","SanityCheck","DatabaseDriver","RemoteServices",
+"ReplicationSuite"]

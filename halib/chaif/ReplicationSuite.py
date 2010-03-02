@@ -21,6 +21,7 @@ from os import path
 import commands
 import halib.chaif.DatabaseDriver as ddriver
 import halib.Logger as logger
+import halib.Exit as exit
 
 class ReplicationSuite:
    def __init__(self):
@@ -32,5 +33,33 @@ class ReplicationSuite:
       if(not path.exists(self.image_directory)):
          logger.subsection("creating image dir: "+self.image_directory)
          commands.getoutput("mkdir -p "+self.image_directory)
+
+      #Now we prepare the golden client image
+      logger.subsection("preparing golden client")
+      if("FATAL" in commands.getoutput("si_prepareclient --server\
+      192.168.0.1 --quiet"):
+         logger.subsection("failed to prepare golden client")
+         exit.open("system replication failed")
+
+      #Create actual image
+      logger.subsection("getting image")
+      output = commands.getoutput("si_getimage --golden-client 192.168.0.1 \
+      --image "+self.image_name+" --post-install reboot \
+      --exclude "+self.image_directory+" --directory "+self.image_directory\
+      +" --ip-assignment static --quiet")
+      if ("FATAL" in output):
+         logger.subection("failed to create image")
+         exit.open("image creation failed")
+
+      logger.subsection("starting systemimager-server-rsyncd service")
+      commands.getoutput("service systemimager-server-rsyncd start")
+
+      logger.subsection("making bootserver")
+      commands.getoutput("si_makebootserver -f --interface="\
+      +self.interface "--localdhcp=y --pxelinux=/usr/lib/syslinux/pxelinux.0")
+
+      logger.subsection("configuring dhcp")
+
+
 
 

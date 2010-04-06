@@ -80,5 +80,5 @@ def rsyncCheck():
       errorsList.append("Rsync is not installed")
 
 def monitCheck():
-   if(not(os.path.exisits("/etc/init.d/monit"))):
+   if(not(os.path.exists("/etc/init.d/monit"))):
       errorsList.append("Monit is not installed")

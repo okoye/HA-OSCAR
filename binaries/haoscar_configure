@@ -25,6 +25,7 @@ import getopt
 import halib.Env as env
 import halib.Logger as logger
 import halib.chaif.Chaif as chaif
+import halib.chaif.ReplicationSuite
 import halib.chaif.RemoteServices as RemoteServices
 import halib.chaif.DatabaseDriver as ddriver
 import halib.hatci.Heartbeat as heartbeat
@@ -129,8 +130,10 @@ def main():
    #At this point we have finished our installation
    #We now start all services
    
-   logger.section("Cleanup...")
-   raw_input("press enter key when secondary server is rebooting ")
+   logger.section("System Image Creation")
+   logger.subsection("initializing and running replication suite")
+   replicate = ReplicationSuite.ReplicationSuite()
+   replicate.clone()
 
    #TODO: Make sure there are no errors in starting
    commands.getoutput("/etc/init.d/heartbeat restart")

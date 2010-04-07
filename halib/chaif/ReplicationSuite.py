@@ -24,11 +24,6 @@ import halib.Logger as logger
 import halib.Exit as exit
 
 class ReplicationSuite:
-   def __init__(self):
-      self.image_directory = "/usr/share/haoscar/images"
-      self.interface = ""
-      self.image_name = "system_image"
-
    def clone(self):
       """retrieve all necessary data from db"""
       database = ddriver.DbDriver()

@@ -30,36 +30,33 @@ class ReplicationSuite:
       self.image_name = "system_image"
 
    def clone(self):
-      if(not path.exists(self.image_directory)):
-         logger.subsection("creating image dir: "+self.image_directory)
-         commands.getoutput("mkdir -p "+self.image_directory)
+      """retrieve all necessary data from db"""
+      database = ddriver.DbDriver()
+      primary_conf = database.select_db('Primary_Configuration')
+      secondary_conf = database.select_db('Secondary_Configuration')
+      general_conf = database.select_db('General_Configuration')
 
-      #Now we prepare the golden client image
-      logger.subsection("preparing golden client")
-      if("FATAL" in commands.getoutput("si_prepareclient --server\
-      192.168.0.1 --quiet"):
-         logger.subsection("failed to prepare golden client")
-         exit.open("system replication failed")
+      """now set all variables necessary"""
+      imager_config = []
+      imager_config.append("GROUP_NAME:ha_group")
+      imager_config.append("HA_ETH:"+primary_conf[0]["NIC_INFO"])
+      imager_config.append("IMAGE_DIR:/usr/share/haoscar/images")
+      imager_config.append("IMAGE_NAME:ha_image")
+      imager_config.append("255.255.255.0") #TODO: Update database 
+                                             #schema with netmask
+      imager_config.append("PRIMARY_HOSTNAME:"+primary_conf[0]["HOSTNAME"])
+      imager_config.append("PRIMARY_IP:"+primary_conf[0]["IP_ADDR"])
+      imager_config.append("SECONDARY_HOSTNAME:"+secondary_conf[0]["HOSTNAME"])
+      imager_config.append("SECONDARY_IP:"+secondary_conf[0]["IP_ADDR"])
+      imager_config.append("SUBNET:192.168.0.0")#TODO: Update database schema
+                                             #with subnet
+      
+      #Now we do some writing
+      FILE = open("/usr/share/haoscar/sysimager.conf","w")
+      for config in imager_config:
+         FILE.writelines(config)
+      FILE.close()
+      logger.subsection("finished configuring sysimager.conf")
 
-      #Create actual image
-      logger.subsection("getting image")
-      output = commands.getoutput("si_getimage --golden-client 192.168.0.1 \
-      --image "+self.image_name+" --post-install reboot \
-      --exclude "+self.image_directory+" --directory "+self.image_directory\
-      +" --ip-assignment static --quiet")
-      if ("FATAL" in output):
-         logger.subection("failed to create image")
-         exit.open("image creation failed")
-
-      logger.subsection("starting systemimager-server-rsyncd service")
-      commands.getoutput("service systemimager-server-rsyncd start")
-
-      logger.subsection("making bootserver")
-      commands.getoutput("si_makebootserver -f --interface="\
-      +self.interface "--localdhcp=y --pxelinux=/usr/lib/syslinux/pxelinux.0")
-
-      logger.subsection("configuring dhcp")
-
-
-
-
+      logger.subsection("starting cloning process")
+      commands.getoutput("image-server

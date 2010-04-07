@@ -33,17 +33,18 @@ class ReplicationSuite:
 
       """now set all variables necessary"""
       imager_config = []
-      imager_config.append("GROUP_NAME:ha_group")
-      imager_config.append("HA_ETH:"+primary_conf[0]["NIC_INFO"])
-      imager_config.append("IMAGE_DIR:/usr/share/haoscar/images")
-      imager_config.append("IMAGE_NAME:ha_image")
-      imager_config.append("255.255.255.0") #TODO: Update database 
+      imager_config.append("GROUP_NAME:ha_group\n")
+      imager_config.append("HA_ETH:"+primary_conf[0]["NIC_INFO"]+"\n")
+      imager_config.append("IMAGE_DIR:/usr/share/haoscar/images\n")
+      imager_config.append("IMAGE_NAME:ha_image\n")
+      imager_config.append("MASK:255.255.255.0\n") #TODO: Update database 
                                              #schema with netmask
-      imager_config.append("PRIMARY_HOSTNAME:"+primary_conf[0]["HOSTNAME"])
-      imager_config.append("PRIMARY_IP:"+primary_conf[0]["IP_ADDR"])
-      imager_config.append("SECONDARY_HOSTNAME:"+secondary_conf[0]["HOSTNAME"])
-      imager_config.append("SECONDARY_IP:"+secondary_conf[0]["IP_ADDR"])
-      imager_config.append("SUBNET:192.168.0.0")#TODO: Update database schema
+      imager_config.append("PRIMARY_HOSTNAME:"+primary_conf[0]["HOSTNAME"]+"\n")
+      imager_config.append("PRIMARY_IP:"+primary_conf[0]["IP_ADDR"]+"\n")
+      imager_config.append("SECONDARY_HOSTNAME:"\
+      +secondary_conf[0]["HOSTNAME"]+"\n")
+      imager_config.append("SECONDARY_IP:"+secondary_conf[0]["IP_ADDR"]+"\n")
+      imager_config.append("SUBNET:192.168.0.0\n")#TODO: Update database schema
                                              #with subnet
       
       #Now we do some writing

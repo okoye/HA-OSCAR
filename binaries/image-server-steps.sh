@@ -6,47 +6,48 @@
 #PRIMARY_IP=192.168.0.1
 #SECONDARY_HOST=ubuntu-server-2
 
-$CONFIG_DIR=../share/si_config
+$CONFIG_DIR=/usr/share/si_config
+[ -d $CONFIG_DIR ] || ( echo "Error: $CONFIG_DIR not found!"  && exit -1 )
 
 [ -f $CONFIG_DIR/image_dir ] && 
 	IMG_DIR=`cat $CONFIG_DIR/image_dir` ||
-	(echo "$CONFIG_DIR/image_dir not found" && exit -1)
+	(echo "Error: $CONFIG_DIR/image_dir not found" && exit -1)
 
 [ -f $CONFIG_DIR/ha_eth ] && 
 	ETH=`cat $CONFIG_DIR/ha_eth` ||
-	(echo "$CONFIG_DIR/ha_eth not found" && exit -1)
+	(echo "Error: $CONFIG_DIR/ha_eth not found" && exit -1)
 
 [ -f $CONFIG_DIR/image_name ] && 
 	IMG=`cat $CONFIG_DIR/image_name` ||
-	(echo "$CONFIG_DIR/image_name not found" && exit -1)
+	(echo "Error: $CONFIG_DIR/image_name not found" && exit -1)
 
 [ -f $CONFIG_DIR/group_name ] && 
 	IMG_GROUP=`cat $CONFIG_DIR/group_name` ||
-	(echo "$CONFIG_DIR/group_name not found" && exit -1)
+	(echo "Error: $CONFIG_DIR/group_name not found" && exit -1)
 
 [ -f $CONFIG_DIR/primary_ip_addr ] && 
 	PRIMARY_IP=`cat $CONFIG_DIR/primary_ip_addr` ||
-	(echo "$CONFIG_DIR/primary_ip_addr not found" && exit -1)
+	(echo "Error: $CONFIG_DIR/primary_ip_addr not found" && exit -1)
 
 [ -f $CONFIG_DIR/secondary_ip_addr ] && 
 	SECONDARY_IP=`cat $CONFIG_DIR/secondary_ip_addr` ||
-	(echo "$CONFIG_DIR/secondary_ip_addr not found" && exit -1)
+	(echo "Error: $CONFIG_DIR/secondary_ip_addr not found" && exit -1)
 
 [ -f $CONFIG_DIR/primary_hostname ] && 
 	PRIMARY_HOST=`cat $CONFIG_DIR/primary_hostname` ||
-	(echo "$CONFIG_DIR/primary_hostname not found" && exit -1)
+	(echo "Error: $CONFIG_DIR/primary_hostname not found" && exit -1)
 
 [ -f $CONFIG_DIR/secondary_hostname ] && 
 	SECONDARY_HOST=`cat $CONFIG_DIR/secondary_hostname` ||
-	(echo "$CONFIG_DIR/secondary_hostname not found" && exit -1)
+	(echo "Error: $CONFIG_DIR/secondary_hostname not found" && exit -1)
 
 [ -f $CONFIG_DIR/subnet ] && 
 	SUBNET=`cat $CONFIG_DIR/subnet` ||
-	(echo "$CONFIG_DIR/subnet not found" && exit -1)
+	(echo "Error: $CONFIG_DIR/subnet not found" && exit -1)
 
 [ -f $CONFIG_DIR/netmask ] && 
 	NETMASK=`cat $CONFIG_DIR/netmask` ||
-	(echo "$CONFIG_DIR/netmask not found" && exit -1)
+	(echo "Error: $CONFIG_DIR/netmask not found" && exit -1)
 
 if [[ ! -d $IMG_DIR ]]; then
 	mkdir -p $IMG_DIR;

@@ -1,12 +1,6 @@
 #!/bin/bash
 
-#IMG_DIR=/root/systemimager/images
-#ETH=eth0
-#IMG=ha_image
-#PRIMARY_IP=192.168.0.1
-#SECONDARY_HOST=ubuntu-server-2
-
-$CONFIG_DIR=../share/si_config
+$CONFIG_DIR=/usr/share/haoscar/si_config
 
 [ -f $CONFIG_DIR/image_dir ] && 
 	IMG_DIR=`cat $CONFIG_DIR/image_dir` ||

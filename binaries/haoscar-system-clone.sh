@@ -1,6 +1,6 @@
 #!/bin/bash
 
-$CONFIG_DIR=/usr/share/haoscar/si_config
+$CONFIG_DIR=/usr/share/haoscar/sysimager.conf
 
 [ -f $CONFIG_DIR/image_dir ] && 
 	IMG_DIR=`cat $CONFIG_DIR/image_dir` ||

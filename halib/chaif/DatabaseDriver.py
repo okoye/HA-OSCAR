@@ -154,7 +154,6 @@ class DbDriver:
       query += ","
     query = query.rstrip(',')
     query += ")"
-    print query
 
     try:
        c.execute(query)

@@ -129,7 +129,7 @@ class DbDriver:
   # Insert given list into given table of database
   def insert_db(self, table, get_dict):
     if not path.exists(self.db_path):
-      logger.subsection("Cannot access database")
+      logger.subsection("Cannot access database at "+db_path)
       exit(2)
 
     existing_tables = []
@@ -154,11 +154,12 @@ class DbDriver:
       query += ","
     query = query.rstrip(',')
     query += ")"
+    print query
 
     try:
        c.execute(query)
     except:
-      logger.subsection("Invalid SQL syntax")
+      logger.subsection("SQL query failed.")
       logger.subsection("Query was :") 
       logger.subsection(query)
       exit(2)
@@ -184,7 +185,7 @@ class DbDriver:
     try:
        c.execute(query)
     except:
-      logger.subsection("Invalid SQL syntax")
+      logger.subsection("SQL query failed.")
       logger.subsection("Query was :") 
       logger.subsection(query)
       exit(2)

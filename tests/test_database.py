@@ -58,11 +58,23 @@ class TestSequenceFunctions(unittest.TestCase):
 
    #Test Insert method works properly
   def test_insert(self):
-    self.db.insert_db("Primary_Configuration", {"HOSTNAME":"clapper", "NIC_INFO":"0ABCD","IP_ADDR":"1.2.3.4"})
+    self.db.insert_db("Primary_Configuration", {"HOSTNAME":"clapper", "NIC_INFO":"0ABCD", "IP_ADDR":"1.2.3.4"})
+    self.db.insert_db("Secondary_Configuration", {"HOSTNAME":"tapper", "NIC_INFO":"1ABCD", "IP_ADDR":"1.2.3.5"})
+    self.db.insert_db("Secondary_Configuration", {"HOSTNAME":"mapper", "NIC_INFO":"2ABCD", "IP_ADDR":"1.2.3.6"})
+    self.db.insert_db("Secondary_Configuration", {"HOSTNAME":"napper", "NIC_INFO":"3ABCD", "IP_ADDR":"1.2.3.7"})
+    self.db.insert_db("Secondary_Configuration", {"HOSTNAME":"sapper", "NIC_INFO":"4ABCD", "IP_ADDR":"1.2.3.8"})
 
   # Test Select method works properly
   def test_select(self):
-    self.assertEquals(self.db.select_db("Primary_Configuration"),{"HOSTNAME":"clapper", "NIC_INFO":"0ABCD","IP_ADDR":"1.2.3.4"})
+    self.assertEquals(self.db.select_db("Primary_Configuration"),[{"HOSTNAME":"clapper", "NIC_INFO":"0ABCD","IP_ADDR":"1.2.3.4"}])
+    self.assertEquals(self.db.select_db("Secondary_Configuration"),[{"HOSTNAME":"tapper", "NIC_INFO":"1ABCD", "IP_ADDR":"1.2.3.5"},{"HOSTNAME":"mapper", "NIC_INFO":"2ABCD", "IP_ADDR":"1.2.3.6"},{"HOSTNAME":"napper", "NIC_INFO":"3ABCD", "IP_ADDR":"1.2.3.7"},{"HOSTNAME":"sapper", "NIC_INFO":"4ABCD", "IP_ADDR":"1.2.3.8"}])
+
+   #Test Truncate method 
+  def test_truncate(self):
+    self.db.truncate_db("Secondary_Configuration")
+    #self.db.insert_db("Secondary_Configuration",{"HOSTNAME":"clapper", "NIC_INFO":"0ABCD", "IP_ADDR":"1.2.3.4"})
+    #self.assertEquals(self.db.select_db("Secondary_Configuration"),[{"HOSTNAME":"clapper", "NIC_INFO":"0ABCD", "IP_ADDR":"1.2.3.4"}])
+    
 
 if __name__ == '__main__':
   unittest.main()

@@ -49,11 +49,8 @@ class DbDriver:
       query += line
     try:
       c.executescript(query)
-    except:
-      logger.subsection("Invalid SQL syntax")
-      logger.subsection("Query was :") 
-      logger.subsection(query)
-      exit(2)
+    except Exception as fail:
+      self.sqlfail(query,fail)
     conn.commit()
     c.close()
 
@@ -69,11 +66,8 @@ class DbDriver:
 
     try:
       c.execute(query)
-    except:
-      logger.subsection("Invalid SQL syntax")
-      logger.subsection("Query was :")
-      logger.subsection(query)
-      exit(2)
+    except Exception as fail:
+      self.sqlfail(query,fail)
     result = []
     for row in c:
       result.append(row[0])  
@@ -104,11 +98,8 @@ class DbDriver:
 
     try:
       c.execute(query)
-    except:
-      logger.subsection("Invalid SQL syntax")
-      logger.subsection("Query was :") 
-      logger.subsection(query)
-      exit(2)
+    except Exception as fail:
+      self.sqlfail(query,fail)
 
     rows = c.fetchall()
     c.execute(query)
@@ -157,11 +148,8 @@ class DbDriver:
 
     try:
        c.execute(query)
-    except:
-      logger.subsection("SQL query failed.")
-      logger.subsection("Query was :") 
-      logger.subsection(query)
-      exit(2)
+    except Exception as fail:
+      self.sqlfail(query,fail)
     conn.commit()
     c.close()
 
@@ -183,11 +171,16 @@ class DbDriver:
     query = "delete from " + table
     try:
        c.execute(query)
-    except:
-      logger.subsection("SQL query failed.")
-      logger.subsection("Query was :") 
-      logger.subsection(query)
-      exit(2)
+    except Exception as fail:
+      self.sqlfail(query,fail)
     conn.commit()
     c.close()
 
+  #SQL query failure exception handeling
+  def sqlfail(self, query, fail):
+    logger.subsection("SQL query failed.")
+    logger.subsection("Query was :") 
+    logger.subsection(query)
+    logger.subsection("Exception was :")
+    logger.subsection(fail.__str__())
+    exit(2)

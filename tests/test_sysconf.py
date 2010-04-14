@@ -17,8 +17,9 @@
 import sys
 sys.path.append("../")
 import halib.chaif.SysConfigurator as sysconfig
-import unittest
 import commands
+import os
+import unittest
 
 class TestConfigFunctions(unittest.TestCase):
   def setUp(self):
@@ -29,12 +30,36 @@ class TestConfigFunctions(unittest.TestCase):
     sys.stdin = file('cfginput') #Used to automate input.
   
   def test_dataconfig(self):
-    self.sconf.dataConfig()
-    self.assertEquals(self.sconf.validated_paths, "/home;")
-    self.sconf.paths = [] #clear path and validated_paths to prevent conflict.
-    self.sconf.validated_paths = ""
-    self.sconf.dataConfig()
-    self.assertEquals(self.sconf.validated_paths, "/home;/etc;/cont space/full path;")
+    #check for /cont space/full path/. If it doesn't exist, make it, and flag that I made it.
+    madeit = 0
+    if (os.path.isdir('/cont space')):
+      if not(os.path.isdir('/cont space/full path')):
+        os.mkdir('/cont space/full path')
+        madeit = 1
+    else:
+      os.mkdir('/cont space')
+      os.mkdir('/cont space/full path')
+      madeit = 2
+    
+    #run tests
+    try:
+      self.sconf.dataConfig()
+      self.assertEquals(self.sconf.validated_paths, "/home;")
+      self.sconf.paths = [] #clear path and validated_paths to prevent conflict.
+      self.sconf.validated_paths = ""
+      self.sconf.dataConfig()
+      self.assertEquals(self.sconf.validated_paths, "/home;/etc;/cont space/full path;")
+    except: #included to cleanup even on fail.
+      if madeit >= 1:
+        os.rmdir('/cont space/full path')
+      if madeit == 2:
+        os.rmdir('/cont space')
+      raise
+    #if I made /cont space/full path/, delete it.
+    if madeit >= 1:
+      os.rmdir('/cont space/full path')
+    if madeit == 2:
+      os.rmdir('/cont space')
 
   def test_netconfig(self):
     sys.stdin = sys.__stdin__ #resumes manual input

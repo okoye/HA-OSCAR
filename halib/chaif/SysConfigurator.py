@@ -74,13 +74,14 @@ class SysConfigurator:
           self.str_value = raw_input("Enter any other directories that may contain user data seperated by commas [e.g /data,/repos]: ")
        else:
           logger.subsection("could not find home partition for synchronization")
-          self.str_value  = raw_input("Enter paths to your user data directories seperated by commas [e.g /data]: ")
+          self.str_value  = raw_input("Enter paths to your user data directories seperated by commas [e.g /data,/repos]: ")
        #Do basic error checking to make sure that is a valid directory
        logger.subsection("is "+self.str_value+" a valid directory[ies]?")
-       self.str_value = self.str_value.replace(" ","")
-       if(self.str_value is not ""):
+       #self.str_value = self.str_value.replace(" ","")  #this means paths with spaces eg: /my\ path/ are not supported. Should be split up, then leading and trailing whitespace truncated. 
+       if(self.str_value is not '' and not self.str_value.isspace()): #rejects any "empty" path list
           self.paths = self.paths + self.str_value.split(',')
        for path in self.paths:
+          path = path.strip() #strips whitespace from front and back, leaving middle spaces intact.
           if(os.path.exists(path)):
              logger.subsection(path+" is a valid path")
              self.validated_paths += path+";"
@@ -88,7 +89,8 @@ class SysConfigurator:
        self.conf_values['DATA_DIR'] = self.validated_paths
        #For planned future support of other synchronization mechanisms like 
        #DRBD, CSYNC ...
-       self.conf_values['DATA_SYNC'] = "RSYNC"   
+       self.conf_values['DATA_SYNC'] = "RSYNC"
+
     #######################################################################
     #We move on to network stuffs
     #This code extracts the list of active interfaces for display to admin
@@ -114,6 +116,7 @@ range(0, outbytes, 32)] #TODO: Fix parsing
           temp = ""
           for i in self.interface_list:
               temp = temp + i + ", "
+          temp = temp.strip(', ') #cleans off tailing comma
           logger.subsection("Detected multiple active interfaces: "+temp)
           self.str_value = raw_input("Select a network interface from the options above: ")
           self.str_value = self.str_value.strip()

@@ -74,8 +74,17 @@ class TestConfigFunctions(unittest.TestCase):
     for interface in self.sconf.interface_list:
       if interface in self.interface_list:
         numadapter -= 1
-    self.assertEquals(numadapter, 0)
+    self.assertEquals(numadapter, 0)  #Each adapter from ifconfig exists exactly once.
+    self.assertEquals(self.sconf.conf_values['NIC_INFO'], 'lo') #The scrips selected 'lo'
+    self.assertEquals(self.sconf.ip_addr,'127.0.0.1') #lo is 127.0.0.1
 
+  def test_serviceconfig(self):
+    self.sconf.serviceConfig()
+    self.assertEquals(self.sconf.conf_values['SERVICES'], 'sshd')
+
+  def test_hostnameconfig(self):
+    self.sconf.hostnameConfig()
+    self.assertEquals(self.sconf.conf_values['HOSTNAME'], commands.getoutput("uname -n"))
 
 #sys.stdin = sys.__stdin__ #resumes manual input
 

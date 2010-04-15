@@ -28,7 +28,7 @@ import os
 import time
 import unittest
 
-class TestSequenceFunctions(unittest.TestCase):
+class TestDBFunctions(unittest.TestCase):
 
   def setUp(self):
     self.db_path = "/tmp/db"
@@ -72,9 +72,6 @@ class TestSequenceFunctions(unittest.TestCase):
    #Test Truncate method 
   def test_truncate(self):
     self.db.truncate_db("Secondary_Configuration")
-    #self.db.insert_db("Secondary_Configuration",{"HOSTNAME":"clapper", "NIC_INFO":"0ABCD", "IP_ADDR":"1.2.3.4"})
-    #self.assertEquals(self.db.select_db("Secondary_Configuration"),[{"HOSTNAME":"clapper", "NIC_INFO":"0ABCD", "IP_ADDR":"1.2.3.4"}])
-    
 
 if __name__ == '__main__':
   unittest.main()

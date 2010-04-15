@@ -27,9 +27,10 @@ class TestConfigFunctions(unittest.TestCase):
     self.iflines = []
     self.ifstring = ""
     self.interface_list = [] #Local parsing of adapter list based on ifconfig.
-    sys.stdin = file('cfginput') #Used to automate input.
   
   def test_dataconfig(self):
+    sys.stdin = file('input/dcfg') #Used to automate input.
+    
     #check for /cont space/full path/. If it doesn't exist, make it, and flag that I made it.
     madeit = 0
     if (os.path.isdir('/cont space')):
@@ -62,7 +63,7 @@ class TestConfigFunctions(unittest.TestCase):
       os.rmdir('/cont space')
 
   def test_netconfig(self):
-    sys.stdin = sys.__stdin__ #resumes manual input
+    sys.stdin = file('input/ncfg') #Used to automate input.
     self.sconf.netConfig()
     iflines = commands.getoutput("ifconfig | grep [[:alnum:]]\ \ \ ").splitlines() #returns only the lines that contain adapter names.
     numadapter = 0    #tracks how many adapters we found to ID if they're all there in the sysconfig
@@ -74,6 +75,9 @@ class TestConfigFunctions(unittest.TestCase):
       if interface in self.interface_list:
         numadapter -= 1
     self.assertEquals(numadapter, 0)
+
+
+#sys.stdin = sys.__stdin__ #resumes manual input
 
 if __name__ == '__main__':
   unittest.main()

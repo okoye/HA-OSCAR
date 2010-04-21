@@ -34,18 +34,18 @@ assert "SUBNET";
 rm /tmp/sysimager.conf.sh
 
 
-if [[ ! -d $IMAGE_DIR ]]; then
+if [[ ! -d $IMAGE_DIR ]]; then 
 	mkdir -p $IMAGE_DIR || 
-	{echo "Cannot crate directory: $IMAGE_DIR" && exit -1 ; }
+	echo "Cannot create directory: $IMAGE_DIR" && exit -1;  
 fi
 
 echo "Preparing the golden client ...";
 si_prepareclient --server $PRIMARY_IP --quiet || \
-	{echo "Error in si_prepareclient" && exit -1; }
+	echo "Error in si_prepareclient" && exit -1; 
 
 echo "Getting the image";
 si_getimage --golden-client $PRIMARY_IP --image $IMAGE_NAME --post-install reboot --exclude $IMAGE_DIR --directory $IMAGE_DIR --ip-assignment static --quiet || \
-	{echo "Error in si_getimage" && exit -1; }
+	echo "Error in si_getimage" && exit -1; 
 
 
 # NOTE: If ufw is active, we have to add a rule to allow rsync port

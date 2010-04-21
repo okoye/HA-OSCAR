@@ -49,7 +49,7 @@ def sshCheck():
 		for line in open("/etc/ssh/sshd_config", "r"):
 			line = line.replace(' ','')
 			line = line.strip('\n')
- 			if line == "PermitRootLoginyes" and "#" not in line:
+ 			if line == "PermitRootLoginyes" and "#" not in line: #means that "PermitRootLogin yes #comment after" fails 
 				remoteRootEnabled = True
 		if not remoteRootEnabled:
 			errorsList.append("Remote root logins via ssh not enabled")
@@ -61,13 +61,15 @@ def networkCheck():
 		errorsList.append("Hostname is localhost")
 
 def osCheck():
-	osfound = False
+	#osfound = False
 	knownOS = ['fedora', 'centos', 'debian', 'ubuntu', 'rhel']
-	for OS in knownOS:
-		if OS in getoutput("lsb_release -i").lower():
-			osfound = True
-			break
-	if not osfound : errorsList.append("Unsupported Operating System")
+	if not (getoutput("lsb_release -is").lower() in knownOS:)
+	  errorsList.append("Unsupported Operating System")
+	#for OS in knownOS: #Inefficient
+	#	if OS in getoutput("lsb_release -i").lower():
+	#		osfound = True
+	#		break
+	#if not osfound : errorsList.append("Unsupported Operating System")
 
 #TODO: Update these heartbeat, rsync, and monit to check using the
 #      package manager of respective distributions

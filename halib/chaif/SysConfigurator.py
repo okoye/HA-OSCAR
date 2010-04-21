@@ -135,6 +135,17 @@ range(0, outbytes, 32)] #TODO: Fix parsing
                          struct.pack('256s', self.str_value[:15])
                          )[20:24])
              self.conf_values['IP_ADDR']=self.ip_addr
+             #maskline = commands.getoutput("echo \""+cmd_result+"\" | grep Mask:")
+             #self.conf_values['NETMASK'] = maskline.partition(Mask:)[2] #retrieves the proper netmask
+             #masksub = self.conf_values['NETMASK'].partition('.')
+             #ipsub = self.conf_values['IP_ADDR'].partition('.')
+             #for (i in range(2))
+             #  self.conf_values['SUBNET'] += ""+ (int(masksub[0]) & int(ipsub[0])) + masksub[1]  #Gets next section
+             #  masksub = masksub[2].partition('.')
+             #  ipsub = ipsub[2].partition('.')
+             #self.conf_values['SUBNET'] += ""+ (int(masksub[0]) & int(ipsub[0])) + masksub[1] #2nd to last
+             #self.conf_values['SUBNET'] += ""+ (int(masksub[2]) & int(ipsub[2]))  #Gets the last section
+              
           
     ########################################################################
     #We finally provide a default list of services to be monitored 'ssh daemon' really

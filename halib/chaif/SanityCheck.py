@@ -39,7 +39,7 @@ def rootCheck():
 
 def rubyCheck():  #is not failing when it should be.
   if "not found" in getoutput("ruby -v")\
-        and "ruby" not in getoutput("which ruby"):
+        and "/ruby" not in getoutput("which ruby"):
     errorsList.append("Ruby not found")
 
 #sshCheck is unnecessary
@@ -62,9 +62,11 @@ def networkCheck():
 
 def osCheck():
 	#osfound = False
-	knownOS = ['fedora', 'centos', 'debian', 'ubuntu', 'rhel']
-	if not (getoutput("lsb_release -is").lower() in knownOS):
+  knownOS = ['fedora', 'centos', 'debian', 'ubuntu', 'rhel']
+  if not (output = getoutput("lsb_release -is").lower() in knownOS): #lsb_release not default in fedora
 	  errorsList.append("Unsupported Operating System")
+	  if "not found" in output:
+	    errorsList.append("LSB Information Unavailable. Is LSB installed?")
 	#for OS in knownOS: #Inefficient
 	#	if OS in getoutput("lsb_release -i").lower():
 	#		osfound = True

@@ -63,10 +63,13 @@ def networkCheck():
 def osCheck():
 	#osfound = False
   knownOS = ['fedora', 'centos', 'debian', 'ubuntu', 'rhel']
-  if not (output = getoutput("lsb_release -is").lower() in knownOS): #lsb_release not default in fedora
-	  errorsList.append("Unsupported Operating System")
-	  if "not found" in output:
-	    errorsList.append("LSB Information Unavailable. Is LSB installed?")
+  output = getoutput("lsb_release -is").lower()
+  if "not found" in output:
+    errorsList.append("LSB Information Unavailable. Is LSB installed?")
+  else:
+    if not (output in knownOS): #lsb_release not default in fedora
+      errorsList.append("Unsupported Operating System")
+	  
 	#for OS in knownOS: #Inefficient
 	#	if OS in getoutput("lsb_release -i").lower():
 	#		osfound = True

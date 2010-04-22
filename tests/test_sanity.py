@@ -37,6 +37,7 @@ class TestSanityFunctions(unittest.TestCase):
 
   def test_oscheck(self):
     sanity.osCheck()
+    self.assert_("LSB Information Unavailable. Is LSB installed?" not in sanity.errorsList)
     self.assert_("Unsupported Operating System" not in sanity.errorsList)
 
   def test_heartcheck(self):

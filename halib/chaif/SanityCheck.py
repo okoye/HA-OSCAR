@@ -29,8 +29,6 @@ def initialize():
 	rubyCheck()
 	networkCheck()
 	osCheck()
-        heartbeatCheck()
-        monitCheck()
 	return errorsList
 
 def rootCheck():
@@ -42,20 +40,6 @@ def rubyCheck():  #is not failing when it should be.
         and "/ruby" not in getoutput("which ruby"):
     errorsList.append("Ruby not found")
 
-#sshCheck is unnecessary
-def sshCheck():
-	remoteRootEnabled = False
-	try:
-		for line in open("/etc/ssh/sshd_config", "r"):
-			line = line.replace(' ','')
-			line = line.strip('\n')
- 			if line == "PermitRootLoginyes" and "#" not in line: 
-				remoteRootEnabled = True
-		if not remoteRootEnabled:
-			errorsList.append("Remote root logins via ssh not enabled")
-	except IOError:
-		errorsList.append("Cannot access sshd_config")
-
 def networkCheck():
 	if "localhost" in getoutput("hostname"):
 		errorsList.append("Hostname is localhost")
@@ -63,22 +47,5 @@ def networkCheck():
 def osCheck():
   knownOS = ['fedora', 'centos', 'debian', 'ubuntu', 'rhel']
   output = getoutput("lsb_release -is").lower()
-  if "not found" in output:
-    errorsList.append("LSB information unavailable. Is LSB installed?")
-  else:
-    if not (output in knownOS): #lsb_release not default in fedora
-      errorsList.append("Unsupported operating system")
-
-#TODO: Update these heartbeat, rsync, and monit to check using the
-#      package manager of respective distributions
-def heartbeatCheck():
-   if (not (os.path.exists("/etc/init.d/heartbeat"))):
-      errorsList.append("Heartbeat is not installed")
-
-def rsyncCheck():
-   if(not (os.path.exists("/usr/bin/rsync"))):
-      errorsList.append("Rsync is not installed")
-
-def monitCheck():
-   if(not(os.path.exists("/etc/init.d/monit"))):
-      errorsList.append("Monit is not installed")
+  if not (output in knownOS): #lsb_release not default in fedora
+    errorsList.append("Unsupported operating system")

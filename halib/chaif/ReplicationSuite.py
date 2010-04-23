@@ -55,4 +55,5 @@ class ReplicationSuite:
       logger.subsection("finished configuring sysimager.conf")
 
       logger.subsection("starting cloning process")
-      print commands.getoutput("haoscar-system-clone.sh")
+      #print commands.getoutput("echo \"I am in `pwd`\"")
+      print commands.getoutput("./haoscar-system-clone.sh")

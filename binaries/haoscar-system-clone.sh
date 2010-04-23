@@ -7,8 +7,7 @@
 #SECONDARY_HOST=ubuntu-server-2
 
 CONFIG_FILE=/usr/share/haoscar/sysimager.conf
-[ -f $CONFIG_FILE ] || 
-{ echo "Error: $CONFIG_FILE not found!"  && exit -1; }
+[ -f $CONFIG_FILE ] || ( echo "Error: $CONFIG_FILE not found!"  && exit -1 )
 
 sed s/:/=/ $CONFIG_FILE > /tmp/sysimager.conf.sh
 source /tmp/sysimager.conf.sh
@@ -34,18 +33,18 @@ assert "SUBNET";
 rm /tmp/sysimager.conf.sh
 
 
-if [[ ! -d $IMAGE_DIR ]]; then 
+if [[ ! -d $IMAGE_DIR ]]; then
 	mkdir -p $IMAGE_DIR || 
-	echo "Cannot create directory: $IMAGE_DIR" && exit -1;  
+	{ echo "Cannot crate directory: $IMAGE_DIR" && exit -1 ; }
 fi
 
 echo "Preparing the golden client ...";
 si_prepareclient --server $PRIMARY_IP --quiet || \
-	echo "Error in si_prepareclient" && exit -1; 
+	{ echo "Error in si_prepareclient" && exit -1; }
 
 echo "Getting the image";
 si_getimage --golden-client $PRIMARY_IP --image $IMAGE_NAME --post-install reboot --exclude $IMAGE_DIR --directory $IMAGE_DIR --ip-assignment static --quiet || \
-	echo "Error in si_getimage" && exit -1; 
+	{ echo "Error in si_getimage" && exit -1; }
 
 
 # NOTE: If ufw is active, we have to add a rule to allow rsync port
@@ -68,9 +67,9 @@ while [ -f $base_name.bak.$num ]; do
 	num=$((num+1)) 
 done
 cp $base_name $base_name.bak.$num
-./gen-dhcpd-conf.pl --primary-ip $PRIMARY_IP \\
-	--secondary-ip $SECONDARY_IP \\
-	--netmask $MASK \\
+./gen-dhcpd-conf.pl --primary-ip $PRIMARY_IP \
+	--secondary-ip $SECONDARY_IP \
+	--netmask $MASK \
 	--subnet $SUBNET > $base_name
 
 service dhcp3-server restart
@@ -89,10 +88,10 @@ while [ -f $base_name.bak.$num ]; do
 	num=$((num+1)) 
 done
 cp $base_name $base_name.bak.$num;
-./gen-cluster-xml.pl --primary-hostname $PRIMARY_HOSTNAME \\
-	--secondary-hostname $SECONDARY_HOST \\
-	--image-name $IMAGE_NAME \\
-	--image-group-name $GROUP_NAME \\
+./gen-cluster-xml.pl --primary-hostname $PRIMARY_HOSTNAME \
+	--secondary-hostname $SECONDARY_HOST \
+	--image-name $IMAGE_NAME \
+	--image-group-name $GROUP_NAME \
 	> $base_name
 
 si_clusterconfig -u

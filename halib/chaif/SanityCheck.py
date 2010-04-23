@@ -61,20 +61,13 @@ def networkCheck():
 		errorsList.append("Hostname is localhost")
 
 def osCheck():
-	#osfound = False
   knownOS = ['fedora', 'centos', 'debian', 'ubuntu', 'rhel']
   output = getoutput("lsb_release -is").lower()
   if "not found" in output:
-    errorsList.append("LSB Information Unavailable. Is LSB installed?")
+    errorsList.append("LSB information unavailable. Is LSB installed?")
   else:
     if not (output in knownOS): #lsb_release not default in fedora
-      errorsList.append("Unsupported Operating System")
-	  
-	#for OS in knownOS: #Inefficient
-	#	if OS in getoutput("lsb_release -i").lower():
-	#		osfound = True
-	#		break
-	#if not osfound : errorsList.append("Unsupported Operating System")
+      errorsList.append("Unsupported operating system")
 
 #TODO: Update these heartbeat, rsync, and monit to check using the
 #      package manager of respective distributions

@@ -37,20 +37,7 @@ class TestSanityFunctions(unittest.TestCase):
 
   def test_oscheck(self):
     sanity.osCheck()
-    self.assert_("LSB Information Unavailable. Is LSB installed?" not in sanity.errorsList)
     self.assert_("Unsupported Operating System" not in sanity.errorsList)
-
-  def test_heartcheck(self):
-    sanity.heartbeatCheck()
-    self.assert_("Heartbeat is not installed" not in sanity.errorsList)
-
-  def test_rsynccheck(self):
-    sanity.rsyncCheck()
-    self.assert_("Rsync is not installed" not in sanity.errorsList)
-
-  def test_monitcheck(self):
-    sanity.monitCheck()
-    self.assert_("Monit is not installed" not in sanity.errorsList)
 
 
 if __name__ == '__main__':

@@ -120,6 +120,10 @@ else
 fi 
 
 si_mkclientnetboot --netboot --clients $SECONDARY_HOSTNAME --flavor $IMAGE_NAME
-
+if service systemimager-server-rsyncd status; then
+	service systemimager-server-rsyncd restart; 
+else
+	service systemimager-server-rsyncd start; 
+fi
 
 

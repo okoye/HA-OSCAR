@@ -1,13 +1,7 @@
 #!/bin/bash
 
-#IMAGE_DIR=/root/systemimager/images
-#HA_ETH=eth0
-#IMAGE_NAME=ha_image
-#PRIMARY_IP=192.168.0.1
-#SECONDARY_HOST=ubuntu-server-2
-
 CONFIG_FILE=/usr/share/haoscar/sysimager.conf
-[ -f $CONFIG_FILE ] || ( echo "Error: $CONFIG_FILE not found!"  && exit -1 )
+[ -f $CONFIG_FILE ] || { echo "Error: $CONFIG_FILE not found!"  && exit -1; }
 
 sed s/:/=/ $CONFIG_FILE > /tmp/sysimager.conf.sh
 source /tmp/sysimager.conf.sh
@@ -17,6 +11,20 @@ function assert() {
 		echo "Error: $1 is not set!!!";
 		exit -1; 
 	fi
+	echo "$1 = ${!1}";
+}
+
+function bak() {
+	if [ ! -f $1 ]; then
+		echo "Backup error: $1 not found";
+		return 100;
+	fi;
+	base_name=$1;
+	num=1;
+	while [ -f $base_name.bak.$num ]; do
+		num=$((num+1)) 
+	done
+	cp $base_name $base_name.bak.$num;
 }
 
 assert "GROUP_NAME";
@@ -39,12 +47,11 @@ if [[ ! -d $IMAGE_DIR ]]; then
 fi
 
 echo "Preparing the golden client ...";
-si_prepareclient --server $PRIMARY_IP --quiet || \
-	{ echo "Error in si_prepareclient" && exit -1; }
+
+si_prepareclient --server $PRIMARY_IP --quiet || { echo "Error in si_prepareclient" && exit -1; }
 
 echo "Getting the image";
-si_getimage --golden-client $PRIMARY_IP --image $IMAGE_NAME --post-install reboot --exclude $IMAGE_DIR --directory $IMAGE_DIR --ip-assignment static --quiet || \
-	{ echo "Error in si_getimage" && exit -1; }
+si_getimage --golden-client $PRIMARY_IP --image $IMAGE_NAME --post-install reboot --exclude $IMAGE_DIR --directory $IMAGE_DIR --ip-assignment static --quiet || { echo "Error in si_getimage" && exit -1; }
 
 
 # NOTE: If ufw is active, we have to add a rule to allow rsync port
@@ -60,17 +67,13 @@ si_mkbootserver -f --interface=$HA_ETH --localdhcp=y --pxelinux=/usr/lib/syslinu
 # NOTE: The following line is for ubuntu only
 
 echo "Configuring DHCP ...";
+dhcp_conf="/etc/dhcp3/dhcpd.conf";
+bak $dhcp_conf;
 
-base_name=/etc/dhcp3/dhcpd.conf
-num=1 
-while [ -f $base_name.bak.$num ]; do
-	num=$((num+1)) 
-done
-cp $base_name $base_name.bak.$num
 ./gen-dhcpd-conf.pl --primary-ip $PRIMARY_IP \
 	--secondary-ip $SECONDARY_IP \
 	--netmask $MASK \
-	--subnet $SUBNET > $base_name
+	--subnet $SUBNET > $dhcp_conf
 
 service dhcp3-server restart
 
@@ -82,18 +85,41 @@ echo "Configuring cluster.xml ...";
 #  and secondary head as client) 
 # Then, run the following command
 
-base_name=/etc/systemimager/cluster.xml
-num=1 
-while [ -f $base_name.bak.$num ]; do
-	num=$((num+1)) 
-done
-cp $base_name $base_name.bak.$num;
+cluster_xml="/etc/systemimager/cluster.xml";
+bak $cluster_xml;
+
 ./gen-cluster-xml.pl --primary-hostname $PRIMARY_HOSTNAME \
-	--secondary-hostname $SECONDARY_HOST \
+	--secondary-hostname $SECONDARY_HOSTNAME \
 	--image-name $IMAGE_NAME \
 	--image-group-name $GROUP_NAME \
 	> $base_name
 
 si_clusterconfig -u
-si_mkclientnetboot --netboot --clients $SECONDARY_HOST --flavor $IMAGE_NAME
+# This is not working
+#  |
+#  |
+#  v
+#si_mkclientnetboot --netboot --clients $SECONDARY_IP --flavor $IMAGE_NAME
+#
+# si_mkclientnetboot will need info from cluster.xml
+# so, wee need to put secondary ip address in /etc/hosts
+# for this to work
+#
+
+if grep "$SECONDARY_HOSTNAME" /etc/hosts; then
+	IP=`grep "$SECONDARY_HOSTNAME" /etc/hosts | cut -f 1`;
+	if [[ $IP != $SECONDARY_IP ]]; then
+		sed s/$IP/$SECONDARY_IP/ /etc/hosts > /tmp/hosts.tmp
+		bak /etc/hosts;
+		cp /tmp/hosts.tmp > /etc/hosts 
+	fi
+else
+	bak /etc/hosts
+	echo "$SECONDARY_IP	$SECONDARY_HOSTNAME" >> /etc/hosts
+
+fi 
+
+si_mkclientnetboot --netboot --clients $SECONDARY_HOSTNAME --flavor $IMAGE_NAME
+
+
 

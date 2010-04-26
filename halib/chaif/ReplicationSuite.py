@@ -56,4 +56,4 @@ class ReplicationSuite:
 
       logger.subsection("starting cloning process")
       #print commands.getoutput("echo \"I am in `pwd`\"")
-      print commands.getoutput("./haoscar-system-clone.sh")
+      print commands.getoutput("haoscar-system-clone.sh")

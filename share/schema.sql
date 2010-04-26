@@ -32,7 +32,9 @@ CREATE TABLE Secondary_Configuration(
 );
 CREATE TABLE General_Configuration(
       DATA_DIR text,
-      DATA_SYNC text
+      DATA_SYNC text,
+      MASK text,
+      SUBNET text
 );
 CREATE TABLE Gather_Modules(
       COMPONENT text,

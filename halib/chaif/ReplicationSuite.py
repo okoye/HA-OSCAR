@@ -37,18 +37,13 @@ class ReplicationSuite:
       imager_config.append("HA_ETH:"+primary_conf[0]["NIC_INFO"]+"\n")
       imager_config.append("IMAGE_DIR:/usr/share/haoscar/images\n")
       imager_config.append("IMAGE_NAME:ha_image\n")
-      imager_config.append("MASK:255.255.255.0\n") #TODO: Update database 
-                              #schema with netmask
+      imager_config.append("MASK:"+general_conf[0]["MASK"]+"\n")
       imager_config.append("PRIMARY_HOSTNAME:"+primary_conf[0]["HOSTNAME"]+"\n")
       imager_config.append("PRIMARY_IP:"+primary_conf[0]["IP_ADDR"]+"\n")
       imager_config.append("SECONDARY_HOSTNAME:"\
           +secondary_conf[0]["HOSTNAME"]+"\n")
       imager_config.append("SECONDARY_IP:"+secondary_conf[0]["IP_ADDR"]+"\n")
-      imager_config.append("SUBNET:192.168.0.0\n")#TODO: Update database schema
-                              #with subnet. 
-                              #Netmask should be retrieved from the interface,
-                              #then subnet shoud be ip & netmask (bitwise and)
-                              #as done in comments in SysConfigurator.netConfig
+      imager_config.append("SUBNET:"+general_conf[0]["SUBNET"]+"\n")
       
       #Now we do some writing
       FILE = open("/usr/share/haoscar/sysimager.conf","w")

@@ -28,7 +28,7 @@ function bak() {
 }
 
 assert "GROUP_NAME";
-assert "HA_ETH";
+assert "HA_ETH"; 
 assert "IMAGE_DIR";
 assert "IMAGE_NAME";
 assert "MASK";
@@ -37,6 +37,19 @@ assert "PRIMARY_IP";
 assert "SECONDARY_HOSTNAME";
 assert "SECONDARY_IP";
 assert "SUBNET";
+
+# Then, export these variables to the subshells
+export GROUP_NAME;
+export HA_ETH; 
+export IMAGE_DIR;
+export IMAGE_NAME;
+export MASK;
+export PRIMARY_HOSTNAME;
+export PRIMARY_IP;
+export SECONDARY_HOSTNAME;
+export SECONDARY_IP;
+export SUBNET;
+
 
 rm /tmp/sysimager.conf.sh
 
@@ -53,6 +66,9 @@ si_prepareclient --server $PRIMARY_IP --quiet || { echo "Error in si_prepareclie
 echo "Getting the image";
 si_getimage --golden-client $PRIMARY_IP --image $IMAGE_NAME --post-install reboot --exclude $IMAGE_DIR --directory $IMAGE_DIR --ip-assignment static --quiet || { echo "Error in si_getimage" && exit -1; }
 
+# Now, we have to alter the system configuration of the image
+echo "Configuring the image ...";
+chroot $IMAGE_DIR/$IMAGE_NAME config-image.sh
 
 # NOTE: If ufw is active, we have to add a rule to allow rsync port
 echo "Start the systemimager-server-rsyncd service"
@@ -70,7 +86,7 @@ echo "Configuring DHCP ...";
 dhcp_conf="/etc/dhcp3/dhcpd.conf";
 bak $dhcp_conf;
 
-./gen-dhcpd-conf.pl --primary-ip $PRIMARY_IP \
+gen-dhcpd-conf.pl --primary-ip $PRIMARY_IP \
 	--secondary-ip $SECONDARY_IP \
 	--netmask $MASK \
 	--subnet $SUBNET > $dhcp_conf
@@ -88,7 +104,7 @@ echo "Configuring cluster.xml ...";
 cluster_xml="/etc/systemimager/cluster.xml";
 bak $cluster_xml;
 
-./gen-cluster-xml.pl --primary-hostname $PRIMARY_HOSTNAME \
+gen-cluster-xml.pl --primary-hostname $PRIMARY_HOSTNAME \
 	--secondary-hostname $SECONDARY_HOSTNAME \
 	--image-name $IMAGE_NAME \
 	--image-group-name $GROUP_NAME \

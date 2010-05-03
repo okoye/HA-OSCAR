@@ -23,7 +23,8 @@
 CREATE TABLE Primary_Configuration(
       HOSTNAME text,
       NIC_INFO text,
-      IP_ADDR  text
+      IP_ADDR  text,
+      FALLBACK_IPS text
 );
 CREATE TABLE Secondary_Configuration(
       HOSTNAME text,

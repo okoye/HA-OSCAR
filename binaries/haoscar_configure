@@ -85,7 +85,7 @@ def main():
       chaif.databaseSetup()
 
       logger.subsection("populating database with primary config data")
-      configdata = ["HOSTNAME", "NIC_INFO", "IP_ADDR"] #Primary/Sec Config Data
+      configdata = ["HOSTNAME", "NIC_INFO", "IP_ADDR", "FALLBACK_IPS"] #Primary/Sec Config Data
       temp = dict()
       database_driver = ddriver.DbDriver()
       for data in configdata:

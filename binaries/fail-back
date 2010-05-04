@@ -2,6 +2,8 @@
 use strict;
 use warnings; 
 
+# Temporarily use this file since I cannot get
+# stuffs from the database ...
 my $rc_file = "/usr/share/haoscar/ips.conf";
 open my $rcf, "<$rc_file" or die "Can't open file $rc_file.";
 

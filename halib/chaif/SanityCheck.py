@@ -29,8 +29,6 @@ def initialize():
 	rubyCheck()
 	networkCheck()
 	osCheck()
-        heartbeatCheck()
-        monitCheck()
 	return errorsList
 
 def rootCheck():
@@ -68,17 +66,3 @@ def osCheck():
 			osfound = True
 			break
 	if not osfound : errorsList.append("Unsupported Operating System")
-
-#TODO: Update these heartbeat, rsync, and monit to check using the
-#      package manager of respective distributions
-def heartbeatCheck():
-   if (not (os.path.exists("/etc/init.d/heartbeat"))):
-      errorsList.append("Heartbeat is not installed")
-
-def rsyncCheck():
-   if(not (os.path.exists("/usr/bin/rsync"))):
-      errorsList.append("Rsync is not installed")
-
-def monitCheck():
-   if(not(os.path.exists("/etc/init.d/monit"))):
-      errorsList.append("Monit is not installed")

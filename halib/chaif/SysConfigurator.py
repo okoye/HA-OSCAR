@@ -117,7 +117,7 @@ range(0, outbytes, 32)] #TODO: Fix parsing
           for i in self.interface_list:
               temp = temp + i + ", "
           temp = temp.strip(', ') #cleans off tailing comma
-          logger.subsection("Detected multiple active interfaces: "+temp)
+          logger.subsection("detected multiple active interfaces: "+temp)
           self.str_value = raw_input("Select a network interface from the options above: ")
           self.str_value = self.str_value.strip()
           cmd_result = commands.getoutput("ifconfig "+self.str_value)

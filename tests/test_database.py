@@ -27,12 +27,14 @@ from os import path
 import os
 import time
 import unittest
+import shutil
 
 class TestDBFunctions(unittest.TestCase):
 
   def setUp(self):
     self.db_path = "/tmp/db"
     self.schema_path = "/tmp/schema.sql"
+    shutil.copy("../share/schema.sql",self.schema_path) #makes sure that the schema is up to date.
     self.db = ddriver.DbDriver(self.db_path, self.schema_path)
 
   # Test Database was created successfully

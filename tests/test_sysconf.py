@@ -21,6 +21,7 @@ import commands
 import os
 import unittest
 
+#TODO: Needs a major re-write
 class TestConfigFunctions(unittest.TestCase):
   def setUp(self):
     self.sconf = sysconfig.SysConfigurator()
@@ -56,7 +57,6 @@ class TestConfigFunctions(unittest.TestCase):
       if madeit == 2:
         os.rmdir('/cont space')
       raise
-    #if I made /cont space/full path/, delete it.
     if madeit >= 1:
       os.rmdir('/cont space/full path')
     if madeit == 2:
@@ -77,11 +77,8 @@ class TestConfigFunctions(unittest.TestCase):
     self.assertEquals(numadapter, 0)  #Each adapter from ifconfig exists exactly once.
     self.assertEquals(self.sconf.conf_values['NIC_INFO'], 'lo') #The scrips selected 'lo'
     self.assertEquals(self.sconf.ip_addr,'127.0.0.1') #lo is 127.0.0.1
-<<<<<<< HEAD:tests/test_sysconf.py
-=======
     self.assertEquals(self.sconf.conf_values['MASK'],'255.0.0.0')
     self.assertEquals(self.sconf.conf_values['SUBNET'],'127.0.0.0')
->>>>>>> 4d3017930bfc1bc13756:tests/test_sysconf.py
 
   def test_serviceconfig(self):
     self.sconf.serviceConfig()

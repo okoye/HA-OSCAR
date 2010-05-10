@@ -59,10 +59,10 @@ def networkCheck():
 		errorsList.append("Hostname is localhost")
 
 def osCheck():
-	osfound = False
 	knownOS = ['fedora', 'centos', 'debian', 'ubuntu', 'rhel']
-	for OS in knownOS:
-		if OS in getoutput("lsb_release -i").lower():
-			osfound = True
-			break
-	if not osfound : errorsList.append("Unsupported Operating System")
+        temp = getoutput("lsb_release -i").lower()
+        osinfo = temp.split(":")
+        if osinfo[1].lower().strip() in knownOS:
+            pass
+        else:
+            errorsList.append("unsupported operating system")

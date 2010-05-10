@@ -77,6 +77,11 @@ class TestConfigFunctions(unittest.TestCase):
     self.assertEquals(numadapter, 0)  #Each adapter from ifconfig exists exactly once.
     self.assertEquals(self.sconf.conf_values['NIC_INFO'], 'lo') #The scrips selected 'lo'
     self.assertEquals(self.sconf.ip_addr,'127.0.0.1') #lo is 127.0.0.1
+<<<<<<< HEAD:tests/test_sysconf.py
+=======
+    self.assertEquals(self.sconf.conf_values['MASK'],'255.0.0.0')
+    self.assertEquals(self.sconf.conf_values['SUBNET'],'127.0.0.0')
+>>>>>>> 4d3017930bfc1bc13756:tests/test_sysconf.py
 
   def test_serviceconfig(self):
     self.sconf.serviceConfig()

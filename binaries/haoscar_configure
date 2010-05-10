@@ -96,6 +96,8 @@ def main():
       temp = dict()
       temp['DATA_DIR'] = sys_config['DATA_DIR']
       temp['DATA_SYNC'] = sys_config['DATA_SYNC']
+      temp['MASK'] = sys_config['MASK']
+      temp['SUBNET'] = sys_config['SUBNET']
       database_driver.insert_db('General_Configuration',temp)
       logger.subsection("sucessfully populated data for general configuration")
 

@@ -35,7 +35,7 @@ def rootCheck():
 	if getoutput("whoami") != "root":
 		errorsList.append("Not run as root")
 
-def rubyCheck():  #is not failing when it should be.
+def rubyCheck():  #TODO: Requirement for web based interface
   if "not found" in getoutput("ruby -v")\
         and "/ruby" not in getoutput("which ruby"):
     errorsList.append("ruby not found")

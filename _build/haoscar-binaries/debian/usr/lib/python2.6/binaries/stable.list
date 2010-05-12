@@ -1,0 +1,68 @@
+#
+# $Id: stable.list,v 1.7 2005/06/06 18:52:20 brianfinley Exp $
+#
+
+#######################################################################
+#
+# SystemImager
+#
+#   i386
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-i386boot-standard-4.0.2-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-i386initrd_template-4.0.2-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-boot-i386-standard_4.0.2_all.deb
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-initrd-template-i386_4.0.2_all.deb
+#
+#   ia64
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-ia64boot-standard-3.6.3-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-ia64initrd_template-3.6.3-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-boot-ia64-standard_4.0.2_all.deb
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-initrd-template-ia64_4.0.2_all.deb
+#
+#   x86_64 (amd64)
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-x86_64boot-standard-4.0.2-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-x86_64initrd_template-4.0.2-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-boot-x86_64-standard_4.0.2_all.deb
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-initrd-template-x86_64_4.0.2_all.deb
+#
+#   ppc64-ps3
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-ppc64-ps3boot-standard-4.0.2-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-ppc64-ps3initrd_template-4.0.2-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-boot-ppc64-ps3-standard_4.0.2_all.deb
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-initrd-template-ppc64-ps3_4.0.2_all.deb
+#
+#   core components
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-common-4.0.2-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-server-4.0.2-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-client-4.0.2-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-common_4.0.2_all.deb
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-server_4.0.2_all.deb
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-client_4.0.2_all.deb
+#
+#   auxillary components
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-flamethrower-4.0.2-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-bittorrent-4.0.2-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-server-flamethrowerd_4.0.2_all.deb
+http://downloads.sourceforge.net/sourceforge/systemimager/systemimager-server-bittorrent_4.0.2_all.deb
+
+
+#######################################################################
+#
+# Flamethrower
+http://downloads.sourceforge.net/sourceforge/systemimager/flamethrower-0.1.8-1.noarch.rpm
+
+
+#######################################################################
+#
+# System Configurator
+http://downloads.sourceforge.net/sourceforge/systemconfig/systemconfigurator-2.2.11-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systemconfig/systemconfigurator_2.2.11-1_all.deb
+http://downloads.sourceforge.net/sourceforge/systemconfig/perl-AppConfig-1.52-4.noarch.rpm
+
+
+#######################################################################
+#
+# SystemInstaller
+http://downloads.sourceforge.net/sourceforge/systeminstaller/systeminstaller-1.04-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systeminstaller/systeminstaller-x11-1.04-1.noarch.rpm
+http://downloads.sourceforge.net/sourceforge/systeminstaller/perl-MLDBM-2.01-1.noarch.rpm
+

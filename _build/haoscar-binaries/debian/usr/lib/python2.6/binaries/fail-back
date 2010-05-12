@@ -1,0 +1,22 @@
+#!/usr/bin/perl
+use strict;
+use warnings; 
+
+# Temporarily use this file since I cannot get
+# stuffs from the database ...
+my $rc_file = "/usr/share/haoscar/ips.conf";
+open my $rcf, "<$rc_file" or die "Can't open file $rc_file.";
+
+while (my $line = <$rcf>) {
+	chomp $line;
+	my $eth = `ifconfig | grep -B 1 $line | cut -f 1 -d " "`;
+	$eth =~ s/\s//g;
+	if ($eth){
+		print "Turning $eth off...\n";
+		my $out = `ifconfig $eth down`;
+	}
+	else {
+		print "$line has no ethernet card attached to it ...\n";
+	}
+}
+

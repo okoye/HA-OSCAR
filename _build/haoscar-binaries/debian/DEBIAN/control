@@ -1,0 +1,10 @@
+Package: HA-OSCAR
+Version: 1.1-1
+Section: base
+Priority: optional
+Architecture:all
+Depends: bash (>= 2.05a-11), grep (>= 2.4.2-3), coreutils (>= 5.0-5)
+   ,monit (>=5.0.0), heartbeat (>= 2.1.4), sqlite3 (>= 3.4.22-1)
+Maintainer: Milind Shakya <sh.milind@gmail.com>
+Description: HA-OSCAR
+

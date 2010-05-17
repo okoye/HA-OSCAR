@@ -154,12 +154,12 @@ range(0, outbytes, 32)] #TODO: Fix parsing
           if ha_ifaces[1] == ',': #We have specified interfaces.
             while ha_ifaces[1] == ',':
               ha_ifaces = ha_ifaces[0].partition(',')
-              ha_ifaces[0] = socket.inet_ntoa(fcntl.ioctl(
+              ha_ip = socket.inet_ntoa(fcntl.ioctl(
                          s.fileno(),
                          0x8915,
                          struct.pack('256s', ha_ifaces[0].strip()[:15])
                          )[20:24])
-              self.conf_values['FALLBACK_IPS'] += ' ' + ha_ifaces[0]  #Leading space should be left intact.
+              self.conf_values['FALLBACK_IPS'] += ha_ip + ' '
           else: #We should use all availavle interfaces except lo.
             for interface in self.interface_list:
               if interface != 'lo' and interface != self.conf_values['NIC_INFO']:
@@ -168,7 +168,7 @@ range(0, outbytes, 32)] #TODO: Fix parsing
                          0x8915,
                          struct.pack('256s', interface[:15])
                          )[20:24])
-                self.conf_values['FALLBACK_IPS'] += ' ' + ha_ip
+                self.conf_values['FALLBACK_IPS'] += ha_ip + ' '
           self.conf_values['FALLBACK_IPS'] = self.conf_values['FALLBACK_IPS'].strip()
           
     ########################################################################

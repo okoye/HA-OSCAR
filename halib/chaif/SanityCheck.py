@@ -33,36 +33,19 @@ def initialize():
 
 def rootCheck():
 	if getoutput("whoami") != "root":
-		errorsList.append("Not run as root.")
+		errorsList.append("Not run as root")
 
-def rubyCheck():
-	if "not found" in getoutput("ruby -v")\
-        and "no ruby" in getoutput("which ruby"):
-		errorsList.append("Ruby not found.")
-
-#sshCheck is unnecessary
-def sshCheck():
-	remoteRootEnabled = False
-	try:
-		for line in open("/etc/ssh/sshd_config", "r"):
-			line = line.replace(' ','')
-			line = line.strip('\n')
- 			if line == "PermitRootLoginyes" and "#" not in line:
-				remoteRootEnabled = True
-		if not remoteRootEnabled:
-			errorsList.append("Remote root logins via ssh not enabled")
-	except IOError:
-		errorsList.append("Cannot access sshd_config")
+def rubyCheck():  #is not failing when it should be.
+  if "not found" in getoutput("ruby -v")\
+        and "/ruby" not in getoutput("which ruby"):
+    errorsList.append("Ruby not found")
 
 def networkCheck():
 	if "localhost" in getoutput("hostname"):
 		errorsList.append("Hostname is localhost")
 
 def osCheck():
-	osfound = False
-	knownOS = ['fedora', 'centos', 'debian', 'ubuntu', 'rhel']
-	for OS in knownOS:
-		if OS in getoutput("lsb_release -i").lower():
-			osfound = True
-			break
-	if not osfound : errorsList.append("Unsupported Operating System")
+  knownOS = ['fedora', 'centos', 'debian', 'ubuntu', 'rhel']
+  output = getoutput("lsb_release -is").lower()
+  if not (output in knownOS): #lsb_release not default in fedora
+    errorsList.append("Unsupported operating system")

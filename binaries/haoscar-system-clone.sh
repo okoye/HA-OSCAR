@@ -142,5 +142,5 @@ else
 	service systemimager-server-rsyncd start; 
 fi
 
-
+exit 0;
 

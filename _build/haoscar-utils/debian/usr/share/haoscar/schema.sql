@@ -23,7 +23,8 @@
 CREATE TABLE Primary_Configuration(
       HOSTNAME text,
       NIC_INFO text,
-      IP_ADDR  text
+      IP_ADDR  text,
+      FALLBACK_IPS text
 );
 CREATE TABLE Secondary_Configuration(
       HOSTNAME text,
@@ -32,7 +33,9 @@ CREATE TABLE Secondary_Configuration(
 );
 CREATE TABLE General_Configuration(
       DATA_DIR text,
-      DATA_SYNC text
+      DATA_SYNC text,
+      MASK text,
+      SUBNET text
 );
 CREATE TABLE Gather_Modules(
       COMPONENT text,

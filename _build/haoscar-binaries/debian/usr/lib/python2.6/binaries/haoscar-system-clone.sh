@@ -53,6 +53,19 @@ export SUBNET;
 
 rm /tmp/sysimager.conf.sh
 
+if grep "$SECONDARY_HOSTNAME" /etc/hosts; then
+	IP=`grep "$SECONDARY_HOSTNAME" /etc/hosts | cut -f 1`;
+	if [[ $IP != $SECONDARY_IP ]]; then
+		sed s/$IP/$SECONDARY_IP/ /etc/hosts > /tmp/hosts.tmp
+		bak /etc/hosts;
+		cp /tmp/hosts.tmp > /etc/hosts 
+	fi
+else
+	bak /etc/hosts
+	echo "$SECONDARY_IP	$SECONDARY_HOSTNAME" >> /etc/hosts
+
+fi 
+
 
 if [[ ! -d $IMAGE_DIR ]]; then
 	mkdir -p $IMAGE_DIR || 
@@ -122,18 +135,6 @@ si_clusterconfig -u
 # for this to work
 #
 
-if grep "$SECONDARY_HOSTNAME" /etc/hosts; then
-	IP=`grep "$SECONDARY_HOSTNAME" /etc/hosts | cut -f 1`;
-	if [[ $IP != $SECONDARY_IP ]]; then
-		sed s/$IP/$SECONDARY_IP/ /etc/hosts > /tmp/hosts.tmp
-		bak /etc/hosts;
-		cp /tmp/hosts.tmp > /etc/hosts 
-	fi
-else
-	bak /etc/hosts
-	echo "$SECONDARY_IP	$SECONDARY_HOSTNAME" >> /etc/hosts
-
-fi 
 
 si_mkclientnetboot --netboot --clients $SECONDARY_HOSTNAME --flavor $IMAGE_NAME
 if service systemimager-server-rsyncd status; then
@@ -142,4 +143,5 @@ else
 	service systemimager-server-rsyncd start; 
 fi
 
+exit 0;
 

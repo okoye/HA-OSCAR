@@ -1,0 +1,52 @@
+#!/bin/bash
+
+. /lib/lsb/init-functions
+
+watch_dirs=`sqlite3 /usr/share/haoscar/hadb 'select * from General_Configuration where DATA_SYNC="RSYNC";'|cut -f 1 -d '|' | sed 's/;/ /g'`;
+
+PID_FILE=/tmp/ha-oscar-filemon-pid
+PRIMARY=`grep "PRIMARY_IP" /usr/share/haoscar/sysimager.conf | cut -f 2 -d ':'`
+SECONDARY=`grep "SECONDARY_IP" /usr/share/haoscar/sysimager.conf | cut -f 2 -d ':'`
+
+# TODO: Add error handling for missing/wrong configuration!!!
+
+DAEMON=/usr/bin/filemon.pl
+
+filemon_start() {
+	log_daemon_msg "Starting ha-oscar-filemon daemon" "ha-oscar-filemon"
+	# TODO Read 'period' information from the configuration
+	# (maybe in the database) 
+	start-stop-daemon --start --pidfile $PID_FILE --background --make-pidfile --exec $DAEMON -- --recursive --period 3600 --primary=$PRIMARY --secondary=$SECONDARY  $watch_dirs
+	log_end_msg $?
+}
+
+
+filemon_stop() {
+	log_daemon_msg "Stopping ha-oscar-filemon daemon" "ha-oscar-filemon"
+	start-stop-daemon --stop --pidfile $PID_FILE
+	log_end_msg $?
+	rm -f $PID_FILE;
+}
+
+case $1 in
+	start)
+		filemon_start;
+	;;
+	stop)
+		filemon_stop;
+	;;
+	status)
+		if status_of_proc -p $PID_FILE "$DAEMON" "ha-oscar-filemon"; then
+			echo "Watching directories: $watch_dirs";
+		else
+			echo "It seems that ha-oscar-filemon is not running";
+		fi
+		
+	;;
+	restart)
+	;;
+	*)
+		echo "Usage: service ha-oscar-filemon {start|stop|restart|status} ";
+		exit 1;
+	;;
+esac

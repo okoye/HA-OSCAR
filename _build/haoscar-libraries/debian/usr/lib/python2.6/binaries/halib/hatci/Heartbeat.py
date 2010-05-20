@@ -100,9 +100,10 @@ def configure():
 		logger.subsection("writing haresource configuration")
 
 		ip_addr = primary_conf[0]['IP_ADDR']
+		ha_ip = primary_conf[0]['FALLBACK_IPS']
 		if(len(ip_addr)):
 			haresource = []
-			haresource.append(commands.getoutput("uname -n") + " "+ ip_addr)
+			haresource.append(commands.getoutput("uname -n") + " " + ip_addr + " " + ha_ip)
 			FILE = open("/etc/ha.d/haresources","w")
 			FILE.writelines(haresource)
 		else:

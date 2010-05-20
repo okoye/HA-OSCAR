@@ -74,13 +74,14 @@ class SysConfigurator:
           self.str_value = raw_input("Enter any other directories that may contain user data seperated by commas [e.g /data,/repos]: ")
        else:
           logger.subsection("could not find home partition for synchronization")
-          self.str_value  = raw_input("Enter paths to your user data directories seperated by commas [e.g /data]: ")
+          self.str_value  = raw_input("Enter paths to your user data directories seperated by commas [e.g /data,/repos]: ")
        #Do basic error checking to make sure that is a valid directory
        logger.subsection("is "+self.str_value+" a valid directory[ies]?")
-       self.str_value = self.str_value.replace(" ","")
-       if(self.str_value is not ""):
+       #self.str_value = self.str_value.replace(" ","")  #this means paths with spaces eg: /my\ path/ are not supported. Should be split up, then leading and trailing whitespace truncated. 
+       if(self.str_value is not '' and not self.str_value.isspace()): #rejects any "empty" path list
           self.paths = self.paths + self.str_value.split(',')
        for path in self.paths:
+          path = path.strip() #strips whitespace from front and back, leaving middle spaces intact.
           if(os.path.exists(path)):
              logger.subsection(path+" is a valid path")
              self.validated_paths += path+";"
@@ -88,7 +89,8 @@ class SysConfigurator:
        self.conf_values['DATA_DIR'] = self.validated_paths
        #For planned future support of other synchronization mechanisms like 
        #DRBD, CSYNC ...
-       self.conf_values['DATA_SYNC'] = "RSYNC"   
+       self.conf_values['DATA_SYNC'] = "RSYNC"
+
     #######################################################################
     #We move on to network stuffs
     #This code extracts the list of active interfaces for display to admin
@@ -106,7 +108,7 @@ class SysConfigurator:
        namestr = names.tostring()
        self.interface_list = [namestr[i:i+32].split('\0',1)[0] for i in
 range(0, outbytes, 32)] #TODO: Fix parsing
-       if (len(self.interface_list) == 1):
+       if (len(self.interface_list) == 1):  #shouldn't ever happen, and would break as written.
           logger.subsection("detected only one interface: "+self.interface_list[0])
           logger.subsection("adding to config file")
           self.conf_values['NIC_INFO'] = self.interface_list[0]
@@ -114,9 +116,11 @@ range(0, outbytes, 32)] #TODO: Fix parsing
           temp = ""
           for i in self.interface_list:
               temp = temp + i + ", "
+          temp = temp.strip(', ') #cleans off tailing comma
           logger.subsection("Detected multiple active interfaces: "+temp)
-          self.str_value = raw_input("Select a network interface from the options above: ")
-          self.str_value = self.str_value.strip()
+          self.str_value = raw_input("Select the local network interface from the options above. If you would like to only migrate specific interfaces on failure, list them after the local interface seperated by commas: ")
+          ha_ifaces = self.str_value.partition(',') #[0] contains local interface. [3] contains rest.
+          self.str_value = ha_ifaces[0].strip()
           cmd_result = commands.getoutput("ifconfig "+self.str_value)
           if ('error fetching' in cmd_result or self.str_value is ""):
              logger.subsection("invalid device specified, skipping for now")
@@ -132,6 +136,40 @@ range(0, outbytes, 32)] #TODO: Fix parsing
                          struct.pack('256s', self.str_value[:15])
                          )[20:24])
              self.conf_values['IP_ADDR']=self.ip_addr
+             
+             logger.subsection("setting up netmask and subnet...")
+             maskline = commands.getoutput("echo \""+cmd_result+"\" | grep Mask:")
+             self.conf_values['MASK'] = maskline.partition('Mask:')[2] #retrieves the proper netmask
+             masksub = self.conf_values['MASK'].partition('.')
+             ipsub = self.conf_values['IP_ADDR'].partition('.')
+             self.conf_values['SUBNET'] = ''
+             for i in range(2):
+               self.conf_values['SUBNET'] += str(int(masksub[0]) & int(ipsub[0])) + '.'  #Gets next section
+               masksub = masksub[2].partition('.')
+               ipsub = ipsub[2].partition('.')
+             self.conf_values['SUBNET'] += str(int(masksub[0]) & int(ipsub[0])) + '.' #2nd to last
+             self.conf_values['SUBNET'] += str(int(masksub[2]) & int(ipsub[2]))  #Gets the last section
+          
+          self.conf_values['FALLBACK_IPS'] = ''
+          if ha_ifaces[1] == ',': #We have specified interfaces.
+            while ha_ifaces[1] == ',':
+              ha_ifaces = ha_ifaces[0].partition(',')
+              ha_ip = socket.inet_ntoa(fcntl.ioctl(
+                         s.fileno(),
+                         0x8915,
+                         struct.pack('256s', ha_ifaces[0].strip()[:15])
+                         )[20:24])
+              self.conf_values['FALLBACK_IPS'] += ha_ip + ' '
+          else: #We should use all availavle interfaces except lo.
+            for interface in self.interface_list:
+              if interface != 'lo' and interface != self.conf_values['NIC_INFO']:
+                ha_ip = socket.inet_ntoa(fcntl.ioctl(
+                         s.fileno(),
+                         0x8915,
+                         struct.pack('256s', interface[:15])
+                         )[20:24])
+                self.conf_values['FALLBACK_IPS'] += ha_ip + ' '
+          self.conf_values['FALLBACK_IPS'] = self.conf_values['FALLBACK_IPS'].strip()
           
     ########################################################################
     #We finally provide a default list of services to be monitored 'ssh daemon' really

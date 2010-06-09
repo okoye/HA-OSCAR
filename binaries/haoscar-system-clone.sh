@@ -83,7 +83,7 @@ if ! grep "$IMAGE_DIR" $EXCLUDED_FILES_FILE >/dev/null 2>&1; then
 fi
 
 echo "Getting the image";
-si_getimage --golden-client $PRIMARY_IP --image $IMAGE_NAME --post-install reboot --exclude $IMAGE_DIR --directory $IMAGE_DIR --ip-assignment static --quiet || { echo "Error in si_getimage" && exit -1; }
+si_getimage --golden-client $PRIMARY_IP --image $IMAGE_NAME --post-install reboot --exclude-file $EXCLUDED_FILES_FILE --directory $IMAGE_DIR --ip-assignment static --quiet || { echo "Error in si_getimage" && exit -1; }
 
 # Now, we have to alter the system configuration of the image
 echo "Configuring the image ...";

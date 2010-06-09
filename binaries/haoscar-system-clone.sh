@@ -76,6 +76,12 @@ echo "Preparing the golden client ...";
 
 si_prepareclient --server $PRIMARY_IP --quiet || { echo "Error in si_prepareclient" && exit -1; }
 
+export EXCLUDED_FILES_FILE=/usr/share/haoscar/excludedfiles
+
+if ! grep "$IMAGE_DIR" $EXCLUDED_FILES_FILE >/dev/null 2>&1; then
+	echo "$IMAGE_DIR" >> $EXCLUDED_FILES_FILE;
+fi
+
 echo "Getting the image";
 si_getimage --golden-client $PRIMARY_IP --image $IMAGE_NAME --post-install reboot --exclude $IMAGE_DIR --directory $IMAGE_DIR --ip-assignment static --quiet || { echo "Error in si_getimage" && exit -1; }
 

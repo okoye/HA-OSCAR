@@ -2,6 +2,9 @@
 - For System Imager Installation -
 Please do this step-by-step.
 
+#TODO: Update readme to reflect current installation procedure by distro
+specific package manager.
+
 1. download-packages.sh
 	This script will download necessary packages for system imager. I would prefer using apt, but unfortunately system imager has not been on apt yet.
 

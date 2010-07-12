@@ -1,32 +1,54 @@
-#Pre Configuration Steps
-Since the package management utility has not yet been configured, you will have
-to manually install "heartbeat", "sqlite"(and its python bindings), "monit".
+- README -
+- For System Imager Installation -
+Please do this step-by-step.
 
-Also, create the directory "/usr/share/haoscar" and copy the schema.sql file
-from share directory in HA-OSCAR download directory to "/usr/share/haoscar"
+1. download-packages.sh
+	This script will download necessary packages for system imager. I would prefer using apt, but unfortunately system imager has not been on apt yet.
 
-#Post Configuration Steps
-Step 1. Run HA - OSCAR installation by navigating to binaries then running the
-script haoscar_configure with the switch primary.
+2. packages-install.sh
+	This script will install the downloaded packages and some of their dependencies.
 
-Step 2. If any error found, copy the output of the error and the command used
-to run haoscar installation.
+3. This step you have to write your phtyon code providing me necessary information via /usr/share/si_config/. The file listed in the si_config directory are:
+	
+	group_name - The group name of the cluster used in System Imager (SI). Just put anything in it or leave it be (I put ha_group as a default).
+	
+	ha_eth - The network interface name used for HA (eth0 by default)
 
-Step 3. Go to gist.github.com and paste the output in the empty box and click
-on "Add Another File".
+	image_dir - The full path of the image directory. By default it is /root/systemimager/images. You can change it to be anything you see fit.
 
-Step 4. In the new textbox paste the output of the command "lsb_release -a" and
-click on "Add Another File".
+	image_name - The name of the system image. By default, it is ha_image.
 
-Step 5. In the new textbox paste the output of the command "git log -n1" and
-click on "Create Public Gist"
+	netmask - The network mask (default: 255.255.255.0)
 
-Step 6. Copy the url which is in the form http://gist.github.com/xxxxxxx (where
-xxxxxxx is an arbitrary number)
+	primary_hostname - The hostname of the primary server
 
-Step 7. Go to http://github.com/okoye/HA-OSCAR/issues and click "Create Issue".
+	primary_ip_addr - The IP address of the primary server
 
-Step 8. Paste the url you copied earlier on the space provided and give it an
-appropiate title/description.
+	secondary_hostname - The hostname of the secondary server
 
-Step 9. Click "Create a new Issue" 
+	secondary_ip_addr - The IP address of the secondary server
+
+	subnet - The subnet 
+
+Please see HA-OSCAR/share/si_config for examples.
+
+
+4. image-server-steps.sh 
+	Once you have all information ready, just call this script INSIDE THE binaries/ DIRECTORY (I need this because of the relative path reference to the configuration files). It will prepare the primary server to be the golden client (i.e. the one being cloned), get the image (from golden client -- which is iteslf), make the primary server to be boot+tftp+dhcp server.
+
+After step 4. You are pretty much done for the primary server. All you have to do is to network boot the secondary server, and let the secondary server fetch an image from the primary server. Then they're done :)
+
+
+
+- For filemon -
+You don't have to config anything for filemon.pl nor worry about it in installation process. We just have to invoke it as a daemon for file monitoring. To see how-to, just call ./filemon.pl --help.
+
+
+
+
+
+
+
+
+
+EOF
